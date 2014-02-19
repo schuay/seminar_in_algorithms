@@ -1,6 +1,13 @@
 \documentclass[a4paper,10pt]{article}
 
+\usepackage{acronym}
+\usepackage[backend=bibtex]{biblatex}
+\usepackage{comment}
+\usepackage[pdfborder={0 0 0}]{hyperref}
 \usepackage[utf8]{inputenc}
+
+\input{../common/acronyms}
+\bibliography{../common/bibliography.bib}
 
 \title{Lock-free skiplist-based priority queues}
 \author{Jakob Gruber, 0203440}
@@ -16,5 +23,9 @@ blablablu blublubla
 \section{Introduction}
 \section{Related Work}
 \section{Conclusion}
+
+\nocite{*}
+
+\printbibliography
 
 \end{document}
