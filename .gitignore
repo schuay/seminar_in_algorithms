@@ -1,1 +1,9 @@
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.pdf
+*.run.xml
 *.swp
+*.tex.backup
