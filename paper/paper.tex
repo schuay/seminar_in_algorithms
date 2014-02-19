@@ -88,8 +88,44 @@ blablablu blublubla
 \end{abstract}
 
 \section{Introduction}
+
+\begin{comment}
+Sections / rough structure:
+* Basic concepts and definitions. Linearizability, sequ./quiescent consistency,
+  lock-free, wait-free, disjoint-access parallelism (one of the papers has good
+  summaries of these).
+  Maybe atomic primitives such as CAS (but probably not).
+* Priority queue definitions, semantics, usages. Mention inherent
+  non-scalability through DeleteMin().
+* Skiplist, heap definitions, semantics, usages.
+* Follow development of current state of the art from Hunt Heap ~> Shavit ~>
+  Tsigas ~> Linden.
+* Maybe benchmarks on mars.
+\end{comment}
+
 \section{Related Work}
+
+\begin{comment}
+  * hunt: most efficient old-school algorithm
+  * lots of other older references in [4]
+  * israeli, rappoport: wait-free, non-available atomic primitive
+  * lotan, shavit [4]: skiplist, lock-based. first to propose usage of skip-lists [11]
+  * sundell, tsigas [3]: skiplist, lock-free, linearizable, unique priorities
+  * herlihy, shavit in art of multiprocessor programming: based on [4], lock-free.
+  * linden, jonsson [11]: skiplist, lock-free, linearizable, reduced mem contention.
+    first lock-free PQ algorithm [11, 12]
+  * specialized versions such as
+    * bounded priorities: [7] and others
+    * probabilistic extractMin, extractMany: [9]
+\end{comment}
+
 \section{Conclusion}
+
+\begin{comment}
+http://leo.stcloudstate.edu/acadwrite/conclude.html
+http://writingcenter.unc.edu/handouts/conclusions/
+http://www.wikihow.com/Write-a-Conclusion-for-a-Research-Paper
+\end{comment}
 
 % TODO: Remove me.
 \nocite{*}
