@@ -2,12 +2,30 @@
 
 \usepackage{acronym}
 \usepackage[backend=bibtex]{biblatex}
+\usepackage[usenames,dvipsnames]{color}
 \usepackage{comment}
 \usepackage[pdfborder={0 0 0}]{hyperref}
 \usepackage[utf8]{inputenc}
+\usepackage{listings}
 
 \input{../common/acronyms}
 \bibliography{../common/bibliography.bib}
+
+\definecolor{Gray}{gray}{0.5}
+\definecolor{OliveGreen}{cmyk}{0.64,0,0.95,0.40}
+
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily,
+    keywordstyle=\color{OliveGreen},
+    commentstyle=\color{Gray},
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=false,
+    showspaces=false,
+    showtabs=false,
+    numbers=left,
+}
 
 \title{Lock-free Skiplist-based Priority Queues \\
        Student Paper for Seminar in Algorithms 2013W \\
@@ -88,6 +106,29 @@ blablablu blublubla
 \end{abstract}
 
 \section{Introduction}
+
+In the past decade, advancements in computer performance have been made mostly
+through increasing the number of processors instead of higher clock speeds.
+This development necessitates new approaches to data structures and algorithms
+that take advantage of concurrent execution on multiple threads and processors. 
+
+This paper focuses on the priority queue data structure, consisting of two operations
+traditionally called \lstinline|Insert| and \lstinline|DeleteMin|. \lstinline|Insert|
+places an item together with its priority into the queue, while \lstinline|DeleteMin|
+removes and returns the highest priority item. Both operations are expected to have
+a complexity of at most $O(\log n)$. Priority queues are used in a large variety
+of situations such as shortest path algorithms and scheduling.
+
+Concurrent priority queues have been the subject of research since the 1980s.
+While early efforts have focused mostly on parallelizing Heap structures
+\cite{hunt1996efficient}, % TODO: Many more, see \cite{shavit2000skiplist}
+more recently priority queues based on \citeauthor{pugh1990skip}'s SkipLists
+\cite{pugh1990skip} seem to show more potential \cite{shavit2000skiplist,
+sundell2003fast,herlihy2012art,linden2013skiplist}.
+
+In the following, we examine the evolution of concurrent priority queues from
+an early prominent Heap-based algorithm through initial SkipList-based designs
+to current state-
 
 \begin{comment}
 Sections / rough structure:
