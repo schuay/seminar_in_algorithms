@@ -126,17 +126,23 @@ watched every movement of the ship while repeating each of the pilot's orders.
 
 \section{Introduction}
 
+% Move to many cores, why do we need concurrent algorithms/data structures?
+
 In the past decade, advancements in computer performance have been made mostly
-through increasing the number of processors instead of higher clock speeds.
+through an increasing number of processors instead of higher clock speeds.
 This development necessitates new approaches to data structures and algorithms
 that take advantage of concurrent execution on multiple threads and processors. 
 
+% The priority queue - semantics and usage summary.
+
 This paper focuses on the priority queue data structure, consisting of two operations
 traditionally called \lstinline|Insert| and \lstinline|DeleteMin|. \lstinline|Insert|
-places an item together with its priority into the queue, while \lstinline|DeleteMin|
-removes and returns the highest priority item. Both operations are expected to have
+places an item into the queue together with its priority, while \lstinline|DeleteMin|
+removes and returns the highest priority item. Both of these operations are expected to have
 a complexity of at most $O(\log n)$. Priority queues are used in a large variety
-of situations such as shortest path algorithms and scheduling.
+of situations such as shortest path algorithms and scheduling. % See liu2012lock for more.
+
+% Concurrent priority queues - heaps, trees, skiplists.
 
 Concurrent priority queues have been the subject of research since the 1980s.
 While early efforts have focused mostly on parallelizing Heap structures
@@ -145,9 +151,46 @@ more recently priority queues based on \citeauthor{pugh1990skip}'s SkipLists
 \cite{pugh1990skip} seem to show more potential \cite{shavit2000skiplist,
 sundell2003fast,herlihy2012art,linden2013skiplist}.
 
-In the following, we examine the evolution of concurrent priority queues from
-an early prominent Heap-based algorithm through initial SkipList-based designs
-to current state-
+% Our plan for the paper - somehow this kind of duplicates the last paragraph though.
+
+In the following, we examine the evolution of concurrent priority queues. We begin
+with first steps which used fine-grained locking to avoid the bottleneck of a single
+global lock. Initial SkipList-based structures offered better disjoint-access
+parallelism, and finally current state of the art lock-free priority queues minimize
+contention in \lstinline|DeleteMin|.
+
+% TODO: In section x, we ... Again, this partially duplicates the last paragraph.
+
+\section{Concepts and Definitions}
+
+% Blocking, lock-free and wait-free data structures.
+
+Concurrent data structures are intended to be accessed simultaneously by several processes
+at once. \emph{Lock-based} structures ensure that only a limited number of processes may enter
+a critical section at once. \emph{Lock-free} data structures eschew the use of locks, and guarantee
+that at least a single process makes progress at all times. Since lock-free structures are
+non-blocking, they are not susceptible to priority inversion, deadlock, and livelock.
+\emph{Wait-freedom} further guarantees that every process finishes each operation in a bounded number of steps. 
+In practise, wait-freedom often introduces an unacceptable overhead; lock-freedom
+however has proven to be both efficient and to scale well to large numbers of processes.
+
+% Linearizability, sequential and quiescent consistency.
+
+There are several different criteria which allows reasoning about the correctness of concurrent
+data structures. \emph{Linearizable} \cite{herlihy1990linearizability} operations appear to take
+effect at a single instant in time at so-called linearization points. Linearizability is composable ---
+any data structure composed of linearizable objects is also linearizable.
+\emph{Sequential consistency} \cite{lamport1979make} requires the result of a set of operations
+executed in parallel to be equivalent to the result of some sequential ordering of the same
+operations.
+\emph{Quiescently consistent} \cite{shavit1996diffracting}
+guarantee that the result of a set of parallel operations is equal to the result of a sequential ordering
+after a period of quiescence, i.e. an interval without active operations has passed.
+
+% Disjoint-access parallelism.
+
+\section{Fine-grained Locking Heaps}
+\section{SkipList-based Priority Queues}
 
 \begin{comment}
 Sections / rough structure:
