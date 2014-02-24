@@ -5,6 +5,13 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/lib/libcds
 )
 
+add_library(linden STATIC
+    ${CMAKE_SOURCE_DIR}/lib/linden/common.c
+    ${CMAKE_SOURCE_DIR}/lib/linden/prioq.c
+    ${CMAKE_SOURCE_DIR}/lib/linden/gc/gc.c
+    ${CMAKE_SOURCE_DIR}/lib/linden/gc/ptst.c
+)
+
 add_executable(pqbench
     heap.cpp
     linden.cpp
@@ -16,4 +23,5 @@ target_link_libraries(pqbench
     ${Boost_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT}
     ${NOBLE_LIBRARIES}
+    linden
 )

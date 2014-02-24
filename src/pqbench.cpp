@@ -20,13 +20,16 @@ int
 main(int argc __attribute__ ((unused)),
 	 char **argv __attribute__ ((unused)))
 {
-	/* TODO: Different comparators are used. Heap: MAX, Noble: MIN. */
+	/* TODO: Different comparators are used. Heap: MAX, Noble: MIN, Linden: MIN. */
 
 	Heap heap(42);
 	generic_pq_use(heap);
 
 	Noble noble;
 	generic_pq_use(noble);
+
+	Linden linden(42);
+	generic_pq_use(linden);
 
     return 0;
 }
