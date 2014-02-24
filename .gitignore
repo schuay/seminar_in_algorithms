@@ -7,4 +7,5 @@
 *.run.xml
 *.swp
 *.tex.backup
+CMakeLists.txt.user
 build/
