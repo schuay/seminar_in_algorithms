@@ -7,3 +7,4 @@
 *.run.xml
 *.swp
 *.tex.backup
+build/
