@@ -407,7 +407,7 @@ pq_init(int max_offset)
     pq->tail = t;
     pq->max_offset = max_offset;
 
-    for (int i = 0; i < NUM_LEVELS; i++ )
+    for (i = 0; i < NUM_LEVELS; i++ )
 	gc_id[i] = gc_add_allocator(sizeof(node_t) + i*sizeof(node_t *));
 
     return pq;

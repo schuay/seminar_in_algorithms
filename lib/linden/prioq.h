@@ -3,8 +3,8 @@
 
 #include "common.h"
 
-typedef unsigned long pkey_t;
-typedef void         *pval_t;
+typedef uint32_t pkey_t;
+typedef uint32_t pval_t;
 
 #define KEY_NULL 0
 #define NUM_LEVELS 32
