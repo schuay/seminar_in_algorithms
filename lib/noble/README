@@ -1,0 +1,13 @@
+The NOBLE license does not allow redistribution,
+but may be retrieved from:
+
+http://www.non-blocking.com/Eng/download-demo.aspx
+
+This directory contains the following files:
+
+Noble.h
+NobleCPP.h
+libNOBLEDEMO32.a
+libNOBLEDEMO32CPP.a
+libNOBLEDEMO64.a
+libNOBLEDEMO64CPP.a
