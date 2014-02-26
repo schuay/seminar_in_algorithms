@@ -1,6 +1,7 @@
 #include <atomic>
 #include <cstdio>
 #include <limits>
+#include <random>
 
 #include "heap.h"
 #include "linden.h"
@@ -17,7 +18,7 @@
 static std::atomic<bool> loop;
 static std::atomic<int> wait_barrier;
 
-static Heap pq_heap(42);
+static Heap pq_heap(DEFAULT_SIZE << 2);
 
 static void
 usage(FILE *out,
@@ -43,21 +44,15 @@ usage(FILE *out,
         DEFAULT_SIZE);
 }
 
-template <class T>
-static void
-work(T &pq)
-{
-    uint32_t v;
-    const bool ret = pq.delete_min(v);
-    printf("delete_min -> (%d, %d)\n", ret, v);
-
-    sleep(5);
-}
-
 static void *
 run(void *args)
 {
     thread_args_t *as = (thread_args_t *)args;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> rand_int;
+    std::uniform_int_distribution<> rand_bool(0, 1);
 
     /* TODO: Adjust to our machines. */
     pin(gettid(), as->id);
@@ -66,16 +61,21 @@ run(void *args)
     std::atomic_fetch_add(&wait_barrier, 1);
 
     // wait until signaled by main thread
-    while (!loop) {
+    while (!loop.load(std::memory_order_relaxed)) {
         /* Wait */;
     }
 
     uint32_t cnt = 0;
     /* start benchmark execution */
     do {
-        work(pq_heap);
+        uint32_t v;
+        if (rand_bool(gen) == 0) {
+            pq_heap.insert(rand_int(gen));
+        } else {
+            pq_heap.delete_min(v);
+        }
         cnt++;
-    } while (loop);
+    } while (loop.load(std::memory_order_relaxed));
     /* end of measured execution */
 
     as->measure = cnt;
@@ -115,7 +115,7 @@ main(int argc __attribute__ ((unused)),
         pthread_create(&t->thread, NULL, run, t);
     }
 
-    while (wait_barrier != nthreads) {
+    while (wait_barrier.load(std::memory_order_relaxed) != nthreads) {
         /* Wait. */;
     }
 
