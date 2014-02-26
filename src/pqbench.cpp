@@ -1,3 +1,4 @@
+#include <atomic>
 #include <cstdio>
 
 #include "heap.h"
@@ -9,18 +10,10 @@
 #define DEFAULT_OFFSET   (32)
 #define DEFAULT_SIZE     (1 << 15)
 
-template <class T>
-static void
-generic_pq_use(T &pq)
-{
-    pq.insert(1);
-    pq.insert(2);
-    pq.insert(3);
+static std::atomic<bool> loop;
+static std::atomic<int> wait_barrier;
 
-    uint32_t v;
-    const bool ret = pq.delete_min(v);
-    printf("delete_min -> (%d, %d)\n", ret, v);
-}
+static Heap pq_heap(42);
 
 static void
 usage(FILE *out,
@@ -46,18 +39,60 @@ usage(FILE *out,
         DEFAULT_SIZE);
 }
 
+template <class T>
+static void
+work(T &pq)
+{
+    pq.insert(1);
+    pq.insert(2);
+    pq.insert(3);
+
+    uint32_t v;
+    const bool ret = pq.delete_min(v);
+    printf("delete_min -> (%d, %d)\n", ret, v);
+
+    sleep(5);
+}
+
+static void *
+run(void *args)
+{
+    thread_args_t *as = (thread_args_t *)args;
+
+    /* TODO: Adjust to our machines. */
+    pin(gettid(), as->id);
+
+    // call in to main thread
+    std::atomic_fetch_add(&wait_barrier, 1);
+
+    // wait until signaled by main thread
+    while (!loop) {
+        /* Wait */;
+    }
+
+    uint32_t cnt = 0;
+    /* start benchmark execution */
+    do {
+        work(pq_heap);
+        cnt++;
+    } while (loop);
+    /* end of measured execution */
+
+    as->measure = cnt;
+
+    return NULL;
+}
+
 int
 main(int argc __attribute__ ((unused)),
      char **argv __attribute__ ((unused)))
 {
-    int opt;
-    thread_args_t *t;
-
     int nthreads  = DEFAULT_NTHREADS;
     int offset    = DEFAULT_OFFSET;
     int secs      = DEFAULT_SECS;
     int init_size = DEFAULT_SIZE;
 
+    int opt;
     while ((opt = getopt(argc, argv, "hn:o:s:t:")) >= 0) {
         switch (opt) {
         case 'h': usage(stdout, argv[0]); exit(EXIT_SUCCESS); break;
@@ -69,14 +104,28 @@ main(int argc __attribute__ ((unused)),
         }
     }
 
-    Heap heap(42);
-    generic_pq_use(heap);
+    thread_args_t *ts = new thread_args_t[nthreads];
+    memset(ts, 0, nthreads * sizeof(thread_args_t));
 
-    Noble noble;
-    generic_pq_use(noble);
+    thread_args_t *t;
+    for (int i = 0; i < nthreads && (t = &ts[i]); i++) {
+        t->id = i;
+        pthread_create(&t->thread, NULL, run, t);
+    }
 
-    Linden linden(42);
-    generic_pq_use(linden);
+    while (wait_barrier != nthreads) {
+        /* Wait. */;
+    }
+
+    loop.store(true);
+    usleep(1000000 * secs);
+    loop.store(false);
+
+    for (int i = 0; i < nthreads && (t = &ts[i]); i++) {
+        pthread_join(t->thread, NULL);
+    }
+
+    delete[] ts;
 
     return 0;
 }
