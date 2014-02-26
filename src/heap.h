@@ -11,6 +11,8 @@ public:
     void insert(const uint32_t v);
     bool delete_min(uint32_t &v);
 
+    void init(const size_t size);
+
 private:
     struct type_traits {
         typedef cds::container::opt::v::dynamic_buffer<void *>  buffer      ;

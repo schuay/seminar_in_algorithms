@@ -47,10 +47,6 @@ template <class T>
 static void
 work(T &pq)
 {
-    pq.insert(1);
-    pq.insert(2);
-    pq.insert(3);
-
     uint32_t v;
     const bool ret = pq.delete_min(v);
     printf("delete_min -> (%d, %d)\n", ret, v);
@@ -107,6 +103,8 @@ main(int argc __attribute__ ((unused)),
         default: assert(0);
         }
     }
+
+    pq_heap.init(init_size);
 
     thread_args_t *ts = new thread_args_t[nthreads];
     memset(ts, 0, nthreads * sizeof(thread_args_t));
