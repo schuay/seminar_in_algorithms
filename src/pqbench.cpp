@@ -1,9 +1,13 @@
 #include <atomic>
 #include <cstdio>
+#include <limits>
 
 #include "heap.h"
 #include "linden.h"
 #include "noble.h"
+
+#undef max /* Clash between macro and limits. */
+#undef min
 
 #define DEFAULT_SECS     (10)
 #define DEFAULT_NTHREADS (1)
@@ -117,13 +121,34 @@ main(int argc __attribute__ ((unused)),
         /* Wait. */;
     }
 
+    struct timespec start, end;
+
     loop.store(true);
+    gettime(&start);
     usleep(1000000 * secs);
     loop.store(false);
+    gettime(&end);
 
     for (int i = 0; i < nthreads && (t = &ts[i]); i++) {
         pthread_join(t->thread, NULL);
     }
+
+    /* PRINT PERF. MEASURES */
+    int sum = 0, min = std::numeric_limits<int>::max(), max = 0;
+
+    for (int i = 0; i < nthreads && (t = &ts[i]); i++) {
+        sum += t->measure;
+        min = std::min(min, t->measure);
+        max = std::max(max, t->measure);
+    }
+    struct timespec elapsed = timediff(start, end);
+    double dt = elapsed.tv_sec + (double)elapsed.tv_nsec / 1000000000.0;
+
+    printf("Total time:\t%1.8f s\n", dt);
+    printf("Ops:\t\t%d\n", sum);
+    printf("Ops/s:\t\t%.0f\n", (double) sum / dt);
+    printf("Min ops/t:\t%d\n", min);
+    printf("Max ops/t:\t%d\n", max);
 
     delete[] ts;
 
