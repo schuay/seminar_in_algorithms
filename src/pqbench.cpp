@@ -19,6 +19,28 @@ static std::atomic<bool> loop;
 static std::atomic<int> wait_barrier;
 
 static Heap pq_heap(DEFAULT_SIZE << 2);
+static Noble pq_noble;
+static Linden pq_linden(DEFAULT_OFFSET);
+
+typedef void (*fn_insert)(const uint32_t);
+typedef bool (*fn_delete_min)(uint32_t &);
+
+static fn_insert ins;
+static fn_delete_min del;
+
+template <typename T>
+static void
+pq_init(T &pq,
+        const size_t size)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis;
+
+    for (int i = 0; i < size; i++) {
+        pq.insert(dis(gen));
+    }
+}
 
 static void
 usage(FILE *out,
@@ -29,6 +51,7 @@ usage(FILE *out,
         "Options:\n", argv0);
 
     fprintf(out, "\t-h\t\tDisplay usage.\n");
+    fprintf(out, "\t-q QUEUE\tRun benchmarks on queue of type TYPE (heap|linden|noble).\n");
     fprintf(out, "\t-t SECS\t\tRun for SECS seconds. "
         "Default: %i\n",
         DEFAULT_SECS);
@@ -70,9 +93,9 @@ run(void *args)
     do {
         uint32_t v;
         if (rand_bool(gen) == 0) {
-            pq_heap.insert(rand_int(gen));
+            ins(rand_int(gen));
         } else {
-            pq_heap.delete_min(v);
+            del(v);
         }
         cnt++;
     } while (loop.load(std::memory_order_relaxed));
@@ -92,19 +115,43 @@ main(int argc __attribute__ ((unused)),
     int secs      = DEFAULT_SECS;
     int init_size = DEFAULT_SIZE;
 
+    const char *type_str = nullptr;
+
+    /* A hack to avoid segfault on destructor in empty linden queue. */
+    pq_linden.insert(42);
+
     int opt;
-    while ((opt = getopt(argc, argv, "hn:o:s:t:")) >= 0) {
+    while ((opt = getopt(argc, argv, "hn:o:q:s:t:")) >= 0) {
         switch (opt) {
         case 'h': usage(stdout, argv[0]); exit(EXIT_SUCCESS); break;
-        case 'n': nthreads	= atoi(optarg); break;
-        case 'o': offset	= atoi(optarg); break;
-        case 's': init_size	= atoi(optarg); break;
-        case 't': secs		= atoi(optarg); break;
+        case 'n': nthreads  = atoi(optarg); break;
+        case 'o': offset    = atoi(optarg); break;
+        case 'q': type_str  = optarg; break;
+        case 's': init_size = atoi(optarg); break;
+        case 't': secs      = atoi(optarg); break;
         default: assert(0);
         }
     }
 
-    pq_heap.init(init_size);
+    if (type_str == nullptr) {
+        usage(stderr, argv[0]);
+        exit(EXIT_FAILURE);
+    } else if (strcmp(type_str, "heap") == 0) {
+        ins = [](const uint32_t v) { pq_heap.insert(v); };
+        del = [](uint32_t &v) { return pq_heap.delete_min(v); };
+        pq_init(pq_heap, init_size);
+    } else if (strcmp(type_str, "linden") == 0) {
+        ins = [](const uint32_t v) { pq_linden.insert(v); };
+        del = [](uint32_t &v) { return pq_linden.delete_min(v); };
+        pq_init(pq_linden, init_size);
+    } else if (strcmp(type_str, "noble") == 0) {
+        ins = [](const uint32_t v) { pq_noble.insert(v); };
+        del = [](uint32_t &v) { return pq_noble.delete_min(v); };
+        pq_init(pq_noble, init_size);
+    } else {
+        usage(stderr, argv[0]);
+        exit(EXIT_FAILURE);
+    }
 
     thread_args_t *ts = new thread_args_t[nthreads];
     memset(ts, 0, nthreads * sizeof(thread_args_t));
