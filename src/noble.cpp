@@ -8,6 +8,12 @@ Noble::Noble()
 
 Noble::~Noble()
 {
+    bool nonempty;
+    uint32_t v;
+    do {
+        nonempty = delete_min(v);
+    } while (nonempty);
+
     delete m_q;
 }
 
