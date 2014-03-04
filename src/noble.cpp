@@ -27,9 +27,9 @@ Noble::insert(const uint32_t v)
 bool
 Noble::delete_min(uint32_t &v)
 {
-    /* TODO: Noble is based on pointers.
-     * Think of some way to avoid losing performance opposed
-     * to other implementations. */
+    /* We tried allocating the ints in advance, but this actually
+     * resulted in lower throughput. Instead, simply alloc/dealloc
+     * in each operation. */
 
     uint32_t *u;
     u = m_q->DeleteMin(nullptr);
