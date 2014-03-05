@@ -22,6 +22,7 @@ add_executable(pqbench
 target_link_libraries(pqbench
     ${Boost_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT}
+    ${HWLOC_LIBRARIES}
     ${NOBLE_LIBRARIES}
     linden
 )

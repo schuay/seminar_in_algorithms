@@ -1,6 +1,7 @@
 #include <atomic>
 #include <cstdio>
 #include <limits>
+#include <hwloc.h>
 #include <random>
 
 #include "heap.h"
@@ -27,6 +28,8 @@ typedef bool (*fn_delete_min)(uint32_t &);
 
 static fn_insert ins;
 static fn_delete_min del;
+
+static hwloc_topology_t topology;
 
 template <typename T>
 static void
@@ -67,6 +70,24 @@ usage(FILE *out,
         DEFAULT_SIZE);
 }
 
+static void
+pin_to_core(const int id)
+{
+    const int depth = hwloc_get_type_or_below_depth(topology, HWLOC_OBJ_CORE);
+    const int ncores = hwloc_get_nbobjs_by_depth(topology, depth);
+
+    const hwloc_obj_t obj = hwloc_get_obj_by_depth(topology, depth, id % ncores);
+
+    hwloc_cpuset_t cpuset = hwloc_bitmap_dup(obj->cpuset);
+    hwloc_bitmap_singlify(cpuset);
+
+    if (hwloc_set_cpubind(topology, cpuset, HWLOC_CPUBIND_THREAD) != 0) {
+        fprintf(stderr, "Could not bind to core: %s\n", strerror(errno));
+    }
+
+    hwloc_bitmap_free(cpuset);
+}
+
 static void *
 run(void *args)
 {
@@ -77,8 +98,7 @@ run(void *args)
     std::uniform_int_distribution<> rand_int;
     std::uniform_int_distribution<> rand_bool(0, 1);
 
-    /* TODO: Adjust to our machines. */
-    pin(gettid(), as->id);
+    pin_to_core(as->id);
 
     // call in to main thread
     std::atomic_fetch_add(&wait_barrier, 1);
@@ -153,6 +173,9 @@ main(int argc __attribute__ ((unused)),
         exit(EXIT_FAILURE);
     }
 
+    hwloc_topology_init(&topology);
+    hwloc_topology_load(topology);
+
     thread_args_t *ts = new thread_args_t[nthreads];
     memset(ts, 0, nthreads * sizeof(thread_args_t));
 
@@ -195,6 +218,7 @@ main(int argc __attribute__ ((unused)),
     printf("Min ops/t:\t%d\n", min);
     printf("Max ops/t:\t%d\n", max);
 
+    hwloc_topology_destroy(topology);
     delete[] ts;
 
     return 0;

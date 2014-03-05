@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 2.8)
 find_package(Boost REQUIRED)
 find_package(Threads REQUIRED)
 
+include(FindPkgConfig)
+pkg_search_module(HWLOC REQUIRED hwloc)
+
 set(NOBLE_LIBRARIES "${CMAKE_SOURCE_DIR}/lib/noble/libNOBLEDEMO32CPP.a")
 if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
     set(NOBLE_LIBRARIES "${CMAKE_SOURCE_DIR}/lib/noble/libNOBLEDEMO64CPP.a")
