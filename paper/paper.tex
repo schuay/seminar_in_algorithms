@@ -184,7 +184,7 @@ any data structure composed of linearizable objects is also linearizable.
 \emph{Sequential consistency} \cite{lamport1979make} requires the result of a set of operations
 executed in parallel to be equivalent to the result of some sequential ordering of the same
 operations.
-\emph{Quiescently consistent} \cite{shavit1996diffracting}
+\emph{Quiescently consistent} \cite{shavit1996diffracting} data structures
 guarantee that the result of a set of parallel operations is equal to the result of a sequential ordering
 after a period of quiescence, i.e. an interval without active operations has passed.
 
@@ -251,8 +251,8 @@ can be properly exploited (instead of being dominated by global locking overhead
 \section{Lock-free Priority Queues}
 
 Traditional data structures such as the Heap have fallen out of favor;
-instead, SkipLists \cite{pugh1990skip} have become the focus of modern concurrent
-priority queue research
+instead, SkipLists \cite{pugh1990skip,pugh1998concurrent} have become the focus
+of modern concurrent priority queue research
 \cite{shavit2000skiplist,sundell2003fast,herlihy2012art,linden2013skiplist,alistarhspraylist}.
 SkipLists are both conceptual simple as well as simple to implement; they also exhibit
 excellent disjoint-access properties, and do not require rebalancing due to their
@@ -270,17 +270,63 @@ are required. As an additional requirement, these memory management schemes must
 be both scalable and lock-free to avoid limiting the SkipList itself.
 \citeauthor{fraser2004practical} in particular employs lock-free epoch-based garbage-collection.
 
-\subsection{Lotan \& Shavit}
+\subsection{Shavit \& Lotan}
 
+\citeauthor{shavit2000skiplist} were the first to propose the use of SkipLists
+for priority queues \cite{linden2013skiplist}. Their initial implementation
+\cite{shavit2000skiplist} builds on \citeauthor{pugh1998concurrent}'s concurrent
+SkipList idea \cite{pugh1998concurrent} which uses one lock per node per level.
+\citeauthor{herlihy2012art} \cite{herlihy2012art} later succeeded in making this
+priority queue lock-free (but not linearizable) and provide a Java implementation
+which we will examine further in the following.
 
+% TODO
 
 \subsection{Sundell \& Tsigas}
+
+
+
 \subsection{Linden \& Jonsson}
 
 \section{Relaxed Priority Queues}
 
 \subsection{Wimmer}
 \subsection{SprayList}
+
+\section{Performance Results}
+
+In this section, we compare the performance of several different concurrent priority
+queue implementations:
+
+\begin{itemize}
+\item \textbf{Hunt} \citeauthor{hunt1996efficient} provide an implementation
+      of their Heap-based design \cite{hunt1996efficient} at \url{ftp://ftp.cs.rochester.edu/pub/packages/concurrent_heap/}.
+      However, as the original code was written for the MIPS architecture, we chose to
+      use the alternative implementation in \emph{libcds}\footnote{\url{http://sourceforge.net/p/libcds/code/}}
+      instead.
+\item \textbf{Noble} An implementation of the \citeauthor{sundell2003fast} priority queue \cite{sundell2003fast}
+      is available in the Noble library\footnote{\url{http://www.non-blocking.com/Eng/download-demo.aspx}}.
+      \textbf{Noble} is lock-free, based on SkipLists, and limited to unique priorities.
+      According to the authors, the commercial Noble library includes a more efficient
+      version of this data structure that can also handle duplicate priority values.
+\item \textbf{Linden} Original code for the \citeauthor{linden2013skiplist} priority queue \cite{linden2013skiplist}
+      is available under an open source license\footnote{\url{http://user.it.uu.se/~jonli208/priorityqueue}}.
+      It is lock-free, SkipList-based, and uses \citeauthor{fraser2004practical}'s lock-free
+      SkipList implementation.
+\end{itemize}
+
+In each test run, the examined priority queue was initially filled with $2^15$
+elements. We then ran a tight loop of $50\%$ insertions and $50\%$ deletions
+for a total of $10$ seconds, where all \lstinline|Insert|
+operations within this context implicitly choose a key uniformly at random from
+the range of all 32-bit integers. Each run was repeated for a total of $10$ times %TODO: Verify this.
+and we report on the average throughput.
+
+All benchmarks were compiled with \verb|-O3| on GCC 4.8.2. Evaluations took place
+on an 80-core Intel Xeon machine.
+
+% TODO: Figures, interpretation. Mention that Noble requires pointers -> new/delete.
+
 
 \begin{comment}
 Sections / rough structure:
@@ -297,6 +343,11 @@ Sections / rough structure:
 \end{comment}
 
 \section{Related Work}
+
+% Bounded priority queues
+% PQ's with non-available primitives
+% Other relaxed data structures -> k-FIFO
+% ... ?
 
 \begin{comment}
   * hunt: most efficient old-school algorithm
