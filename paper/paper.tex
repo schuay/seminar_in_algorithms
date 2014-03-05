@@ -159,6 +159,7 @@ global lock. Initial SkipList-based structures offered better disjoint-access
 parallelism, and finally current state of the art lock-free priority queues minimize
 contention in \lstinline|DeleteMin|.
 
+% TODO: Mention what we don't cover: non-general PQs, unavailable primitives, ...
 % TODO: In section x, we ... Again, this partially duplicates the last paragraph.
 
 \section{Concepts and Definitions}
@@ -197,9 +198,9 @@ spreading such accesses in order to reduce contention as much as possible.
 
 % Priority queues.
 
-Priority queues are an abstract data structure allowing insertion an items with a given priority
+Priority queues are an abstract data structure allowing insertion of items with a given priority
 and removal of the highest-priority item in logarithmic time. Search trees and Heaps (which are 
-flattened representations complete trees such that each node's value is at least as large as
+flattened representations of complete trees such that each node's value is at least as large as
 those of both children) are concrete data structures which are usually used to implement sequential
 priority queues. However, both require fairly elaborate reorganization after \lstinline|DeleteMin|
 and/or \lstinline|Insert| operations, which are especially challenging to achieve in a concurrent
@@ -209,7 +210,7 @@ environment.
 
 SkipLists \cite{pugh1990skip} have become increasingly popular in concurrent data structures because 
 they are both simple and exhibit excellent disjoint-access parallelism. In contrast to
-both search trees and Heaps, reorganization is not necessary since SkipLists rely on
+search trees and Heaps, reorganization is not necessary, since SkipLists rely on
 randomization for an expected $O(\log n)$ complexity of \lstinline|Insert|, \lstinline|Search|
 and \lstinline|Delete| operations.
 A SkipList may be visualized as a set of linked lists with corresponding levels. The linked
@@ -221,7 +222,65 @@ and in none of levels $[i + 1, \infty]$. Upon insertion, the new node's level is
 according to a geometric distribution; deletion simply removes the node.
 
 \section{Fine-grained Locking Heaps}
-\section{SkipList-based Priority Queues}
+
+We chose the priority queue by \citeauthor{hunt1996efficient} \cite{hunt1996efficient}
+as a representative of early concurrent priority queues since it has been proven to
+perform well \cite{shavit2000skiplist} in comparison to other efforts of the time such as \cite{nageshwara1988concurrent,ayani1990lr,yan1998lock}. % Many others \cite{shavit2000skiplist}.
+It is based on a Heap
+structure and attempts to minimize lock contention between threads by a) adding per-node
+locks, b) spreading subsequent insertions through a bit-reversal technique, % Elaborate on these.
+and c) letting insertions traverse bottom-up in order to minimize conflicts with
+top-down deletions.
+
+However, significant limitations to scalability remain. A global lock is required
+to protect accesses to a variable storing the Heap's size which all operations
+must obtain for a short time. Disjoint-access through bit-reversal breaks down
+once a certain amount of traffic is reached, since only subsequent insertions
+are guaranteed to take disjoint paths towards the root node. Note also that
+the root node is a severe serial bottleneck, since it is potentially part of
+every insertion path, and necessarily of every \lstinline|DeleteMin| operation.
+Finally, in contrast to later SkipList-based designs, the capacity of Hunt Heap
+is fixed upon creation.
+
+Benchmarking results in the literature have been mixed; a sequential priority
+queue protected by a single global lock outperforms the \citeauthor{hunt1996efficient}
+Heap in most cases \cite{hunt1996efficient,sundell2003fast}. Speed-up only occurs once
+the size of the Heap reaches a certain threshold such that concurrency
+can be properly exploited (instead of being dominated by global locking overhead).
+
+\section{Lock-free Priority Queues}
+
+Traditional data structures such as the Heap have fallen out of favor;
+instead, SkipLists \cite{pugh1990skip} have become the focus of modern concurrent
+priority queue research
+\cite{shavit2000skiplist,sundell2003fast,herlihy2012art,linden2013skiplist,alistarhspraylist}.
+SkipLists are both conceptual simple as well as simple to implement; they also exhibit
+excellent disjoint-access properties, and do not require rebalancing due to their
+reliance on randomization for expected $O(\log n)$ time insertion and deletion bounds.
+
+A state of the art lock-free SkipList implementation based on \ac{CAS}
+by \citeauthor{fraser2004practical} \cite{fraser2004practical} is freely available\footnote{
+\url{http://www.cl.cam.ac.uk/research/srg/netos/lock-free/}} under a BSD license.
+\citeauthor{fraser2004practical} exploits unused pointer bits to mark nodes as logically
+deleted, with physical deletion following as a second step.
+
+SkipLists are dynamic data structures in the sense that they grow and shrink
+at runtime. In consequence, careful handling of memory accesses and (de)allocations
+are required. As an additional requirement, these memory management schemes must
+be both scalable and lock-free to avoid limiting the SkipList itself.
+\citeauthor{fraser2004practical} in particular employs lock-free epoch-based garbage-collection.
+
+\subsection{Lotan \& Shavit}
+
+
+
+\subsection{Sundell \& Tsigas}
+\subsection{Linden \& Jonsson}
+
+\section{Relaxed Priority Queues}
+
+\subsection{Wimmer}
+\subsection{SprayList}
 
 \begin{comment}
 Sections / rough structure:
