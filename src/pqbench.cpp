@@ -15,6 +15,7 @@
 #define DEFAULT_NTHREADS (1)
 #define DEFAULT_OFFSET   (32)
 #define DEFAULT_SIZE     (1 << 15)
+#define DEFAULT_VERBOSE  (false)
 
 static std::atomic<bool> loop;
 static std::atomic<int> wait_barrier;
@@ -68,6 +69,8 @@ usage(FILE *out,
     fprintf(out, "\t-s SIZE\t\tInitialize queue with SIZE elements. "
         "Default: %i\n",
         DEFAULT_SIZE);
+    fprintf(out, "\t-v\tEnable verbose output. Default: %i\n",
+        DEFAULT_VERBOSE);
 }
 
 static void
@@ -134,6 +137,7 @@ main(int argc __attribute__ ((unused)),
     int offset    = DEFAULT_OFFSET;
     int secs      = DEFAULT_SECS;
     int init_size = DEFAULT_SIZE;
+    bool verbose  = DEFAULT_VERBOSE;
 
     const char *type_str = nullptr;
 
@@ -141,7 +145,7 @@ main(int argc __attribute__ ((unused)),
     pq_linden.insert(42);
 
     int opt;
-    while ((opt = getopt(argc, argv, "hn:o:q:s:t:")) >= 0) {
+    while ((opt = getopt(argc, argv, "hn:o:q:s:t:v")) >= 0) {
         switch (opt) {
         case 'h': usage(stdout, argv[0]); exit(EXIT_SUCCESS); break;
         case 'n': nthreads  = atoi(optarg); break;
@@ -149,6 +153,7 @@ main(int argc __attribute__ ((unused)),
         case 'q': type_str  = optarg; break;
         case 's': init_size = atoi(optarg); break;
         case 't': secs      = atoi(optarg); break;
+        case 'v': verbose   = true; break;
         default: assert(0);
         }
     }
@@ -212,11 +217,15 @@ main(int argc __attribute__ ((unused)),
     struct timespec elapsed = timediff(start, end);
     double dt = elapsed.tv_sec + (double)elapsed.tv_nsec / 1000000000.0;
 
-    printf("Total time:\t%1.8f s\n", dt);
-    printf("Ops:\t\t%d\n", sum);
-    printf("Ops/s:\t\t%.0f\n", (double) sum / dt);
-    printf("Min ops/t:\t%d\n", min);
-    printf("Max ops/t:\t%d\n", max);
+    if (verbose) {
+        printf("Total time:\t%1.8f s\n", dt);
+        printf("Ops:\t\t%d\n", sum);
+        printf("Ops/s:\t\t%.0f\n", (double) sum / dt);
+        printf("Min ops/t:\t%d\n", min);
+        printf("Max ops/t:\t%d\n", max);
+    } else {
+        printf("%.0f\n", (double) sum / dt);
+    }
 
     hwloc_topology_destroy(topology);
     delete[] ts;
