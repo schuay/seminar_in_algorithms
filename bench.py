@@ -36,34 +36,25 @@ def bench(algorithm, ncpus, outfile):
 
 if __name__ == '__main__':
     parser = OptionParser()
-    parser.add_option("-a", "--algorithms", dest = "algorithms",
+    parser.add_option("-a", "--algorithms", dest = "algorithms", default = ",".join(ALGORITHMS),
             help = "Comma-separated list of ['heap', 'noble', 'linden']")
-    parser.add_option("-n", "--ncpus", dest = "ncpus",
+    parser.add_option("-n", "--ncpus", dest = "ncpus", default = ",".join(map(str, NCPUS)),
             help = "Comma-separated list of cpu counts")
-    parser.add_option("-o", "--outfile", dest = "outfile",
+    parser.add_option("-o", "--outfile", dest = "outfile", default = '/dev/null',
             help = "Write results to outfile")
     (options, args) = parser.parse_args()
 
-    if options.algorithms is None:
-        algorithms = ALGORITHMS
-    else:
-        algorithms = options.algorithms.split(',')
-        for a in algorithms:
-            if a not in ALGORITHMS:
-                parser.error('Invalid algorithm')
+    algorithms = options.algorithms.split(',')
+    for a in algorithms:
+        if a not in ALGORITHMS:
+            parser.error('Invalid algorithm')
 
-    if options.ncpus is None:
-        ncpus = NCPUS
-    else:
-        ncpus = list()
-        for n in options.ncpus.split(','):
-            try:
-                ncpus.append(int(n))
-            except:
-                parser.error('Invalid cpu count')
-
-    if options.outfile is None:
-        options.outfile = '/dev/null'
+    ncpus = list()
+    for n in options.ncpus.split(','):
+        try:
+            ncpus.append(int(n))
+        except:
+            parser.error('Invalid cpu count')
 
     with open(options.outfile, 'a') as f:
         for a in algorithms:
