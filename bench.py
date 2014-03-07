@@ -23,13 +23,16 @@ NCPUS = [  1,  2,  3
 
 BIN = 'build/src/pqbench'
 
-def bench(algorithm, ncpus):
+def bench(algorithm, ncpus, outfile):
     output = subprocess.check_output([ BIN
                                      , '-q', algorithm
                                      , '-n', str(ncpus)
                                      ]) # TODO: Size, offset
 
-    print output
+    outstr = '%s, %d, %s' % (algorithm, ncpus, output.strip())
+
+    print outstr
+    f.write(outstr + '\n')
 
 if __name__ == '__main__':
     parser = OptionParser()
@@ -37,6 +40,8 @@ if __name__ == '__main__':
             help = "Comma-separated list of ['heap', 'noble', 'linden']")
     parser.add_option("-n", "--ncpus", dest = "ncpus",
             help = "Comma-separated list of cpu counts")
+    parser.add_option("-o", "--outfile", dest = "outfile",
+            help = "Write results to outfile")
     (options, args) = parser.parse_args()
 
     if options.algorithms is None:
@@ -57,6 +62,10 @@ if __name__ == '__main__':
             except:
                 parser.error('Invalid cpu count')
 
-    for a in algorithms:
-        for n in ncpus:
-            bench(a, n)
+    if options.outfile is None:
+        options.outfile = '/dev/null'
+
+    with open(options.outfile, 'a') as f:
+        for a in algorithms:
+            for n in ncpus:
+                bench(a, n, f)
