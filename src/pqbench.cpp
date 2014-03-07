@@ -59,10 +59,6 @@ usage(FILE *out,
     fprintf(out, "\t-t SECS\t\tRun for SECS seconds. "
         "Default: %i\n",
         DEFAULT_SECS);
-    fprintf(out, "\t-o OFFSET\tUse an offset of OFFSET nodes. Sensible "
-        "\n\t\t\tvalues could be 16 for 8 threads, 128 for 32 threads. "
-        "\n\t\t\tDefault: %i\n",
-        DEFAULT_OFFSET);
     fprintf(out, "\t-n NUM\t\tUse NUM threads. "
         "Default: %i\n",
         DEFAULT_NTHREADS);
@@ -134,7 +130,6 @@ main(int argc __attribute__ ((unused)),
      char **argv __attribute__ ((unused)))
 {
     int nthreads  = DEFAULT_NTHREADS;
-    int offset    = DEFAULT_OFFSET;
     int secs      = DEFAULT_SECS;
     int init_size = DEFAULT_SIZE;
     bool verbose  = DEFAULT_VERBOSE;
@@ -149,7 +144,6 @@ main(int argc __attribute__ ((unused)),
         switch (opt) {
         case 'h': usage(stdout, argv[0]); exit(EXIT_SUCCESS); break;
         case 'n': nthreads  = atoi(optarg); break;
-        case 'o': offset    = atoi(optarg); break;
         case 'q': type_str  = optarg; break;
         case 's': init_size = atoi(optarg); break;
         case 't': secs      = atoi(optarg); break;
