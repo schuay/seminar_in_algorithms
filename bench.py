@@ -21,6 +21,8 @@ NCPUS = [  1,  2,  3
         , 71, 75, 80
         ]
 
+REPS = 10
+
 BIN = 'build/src/pqbench'
 
 def bench(algorithm, ncpus, outfile):
@@ -42,6 +44,8 @@ if __name__ == '__main__':
             help = "Comma-separated list of cpu counts")
     parser.add_option("-o", "--outfile", dest = "outfile", default = '/dev/null',
             help = "Write results to outfile")
+    parser.add_option("-r", "--reps", dest = "reps", type = 'int', default = REPS,
+            help = "Repetitions per run")
     (options, args) = parser.parse_args()
 
     algorithms = options.algorithms.split(',')
@@ -59,4 +63,5 @@ if __name__ == '__main__':
     with open(options.outfile, 'a') as f:
         for a in algorithms:
             for n in ncpus:
-                bench(a, n, f)
+                for r in xrange(options.reps):
+                    bench(a, n, f)
