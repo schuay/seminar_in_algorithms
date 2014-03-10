@@ -221,6 +221,27 @@ $i$. A SkipList node $n$ is said to be of level $i$ if it is in all lists of lev
 and in none of levels $[i + 1, \infty]$. Upon insertion, the new node's level is assigned at random
 according to a geometric distribution; deletion simply removes the node.
 
+% TODO: Maybe integrate into description - otherwise remove. Do we need further detail?
+
+\begin{lstlisting}
+struct slist_t {
+  size_t max_level;
+  node_t head[max_level];
+};
+
+struct node_t {
+  key_t key;
+  value_t value;
+  size_t level;
+  node_t next[level];
+};
+
+/* All operations are expected O(log n) time. */
+void slist_insert(slist_t *l, key_t k, value_t v);
+bool slist_delete(slist_t *l, key_t k, value_t &v);
+\end{lstlisting}
+
+
 \section{Fine-grained Locking Heaps}
 
 We chose the priority queue by \citeauthor{hunt1996efficient} \cite{hunt1996efficient}
@@ -275,12 +296,16 @@ be both scalable and lock-free to avoid limiting the SkipList itself.
 \citeauthor{shavit2000skiplist} were the first to propose the use of SkipLists
 for priority queues \cite{linden2013skiplist}. Their initial implementation
 \cite{shavit2000skiplist} builds on \citeauthor{pugh1998concurrent}'s concurrent
-SkipList idea \cite{pugh1998concurrent} which uses one lock per node per level.
-\citeauthor{herlihy2012art} \cite{herlihy2012art} later succeeded in making this
-priority queue lock-free (but not linearizable) and provide a Java implementation
-which we will examine further in the following.
+SkipList \cite{pugh1998concurrent} which uses one lock per node per level.
 
-% TODO
+A crucial observation is that nodes nodes which are only partially connected
+do not affect correctness of the data structure. As soon as the first level (i.e. \lstinline|node.level[0]|)
+has been successfully connected, a node is considered to be in the SkipList.
+Therefore, both insertions and deletions can proceed in steps - insertions proceed bottom-up while
+deletions proceed top-down, holding locks only for the current level.
+
+\citeauthor{herlihy2012art} \cite{herlihy2012art} later described a variant of this idea 
+that is lock-free and quiescently consistent (but not linearizable).
 
 \subsection{Sundell \& Tsigas}
 
