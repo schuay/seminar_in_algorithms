@@ -319,7 +319,7 @@ struct node_t {
 };
 \end{lstlisting}
 \caption{\citeauthor{shavit2000skiplist} structure.}
-\label{fig:slsl}
+\label{fig:shavitsl}
 \end{figure}
 
 Likewise, deletions are split into a logical phase, atomically setting the \lstinline|node.deleted|
@@ -379,7 +379,7 @@ struct node_t {
 };
 \end{lstlisting}
 \caption{\citeauthor{sundell2003fast} structure.}
-\label{fig:slsl}
+\label{fig:sundellsl}
 \end{figure}
 
 The structure of each node is basically identical to Figure \ref{fig:basicsl}. However, \citeauthor{sundell2003fast}
@@ -423,7 +423,18 @@ Benchmarks performed by \citeauthor{sundell2003fast} show their queue performing
 queues from Sections \ref{sec:shavit} and \ref{sec:hunt}, and slightly better than a priority queue
 consisting of a SkipList protected by a single global lock.
 
-\subsection{Linden \& Jonsson}
+\subsection{Linden \& Jonsson} \label{sec:linden}
+
+\begin{figure}[h]
+\begin{lstlisting}
+struct node_t {
+  [...] /**< Standard node members as above. */
+  atomic<bool> inserting;
+};
+\end{lstlisting}
+\caption{\citeauthor{linden2013skiplist} structure.}
+\label{fig:lindensl}
+\end{figure}
 
 \section{Relaxed Priority Queues}
 
