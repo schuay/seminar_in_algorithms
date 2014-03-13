@@ -436,12 +436,27 @@ struct node_t {
 \label{fig:lindensl}
 \end{figure}
 
- % Mention the BoundOffset parameter.
+ % Mention the BoundOffset parameter (p17), and benching using Fraser-based impls.
 
 \section{Relaxed Priority Queues}
 
-\subsection{Wimmer}
-\subsection{SprayList}
+The body of work discussed in previous sections
+creates the impression that limits of strict, deterministic priority queues have been reached.
+In particular, \citeauthor{} conclude that scalability is solely limited by \lstinline|DeleteMin|,
+and that less than one modified memory location per thread and operation would have to be read
+in order to achieve improved performance \cite{}. % TODO: Cites for this entire section.
+
+Recently, relaxation of provided guarantees have been investigated as another method of reducing
+contention and improving disjoint-access parallelism.
+For instance, k-FIFO queues \cite{} have achieved considerable
+speed-ups compared to strict FIFO queues by allowing \lstinline|Dequeue| to return elements
+up to k positions out of order.
+
+Relaxation has also been applied to concurrent priority queues with some success, and in the following
+sections we discuss two different approaches.
+
+\subsection{Wimmer} \label{sec:wimmer}
+\subsection{SprayList} \label{sec:spraylist}
 
 \section{Performance Results}
 
@@ -476,8 +491,10 @@ All benchmarks were compiled with \verb|-O3| on GCC 4.8.2. Evaluations took plac
 on an 80-core Intel Xeon machine.
 
 % TODO: Figures, interpretation. Mention that Noble requires pointers -> new/delete.
-% Better hardware description - see SprayList section 4.
+% Better hardware description - see SprayList section 4, Linden p16.
 % Note: Strong degradation of noble PQ with growing initial size.
+% Standard PQ benchmarking methodology, cite linden + ??.
+% Drop-off when using more than 1 socket, Linden p17.
 
 \begin{comment}
 Sections / rough structure:
