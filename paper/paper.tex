@@ -27,7 +27,7 @@
     numbers=left,
 }
 
-\title{Lock-free Skiplist-based Priority Queues \\
+\title{State of the Art in Concurrent Priority Queues \\
        Student Paper for Seminar in Algorithms 2013W \\
        Technical University of Vienna}
 \author{Jakob Gruber, 0203440}
@@ -332,6 +332,8 @@ If it succeeds, the current node is physically deleted and returned to the calle
 \lstinline|node.next[0]| is set as the new current node and the procedure is repeated.
 If the end of the list is reached, \lstinline|DeleteMin| returns false to indicate an empty list.
 
+% Logical/physical deletion separation allows concurrent physical deletions.
+
 Note that so far, this implementation is not linearizable: consider the case in which a
 slow thread A is in the middle of a \lstinline|DeleteMin| call. Within this context, we refer to 
 the node with key $i$ as ``node $i$'', or simply $i$. Several \lstinline|CAS|
@@ -407,6 +409,8 @@ to set the deletion bits on all next pointers and then removes the node from the
 \lstinline|node.prev| pointer is used as a shortcut to the previous node, avoiding a complete retraversal
 of the list.
 
+% TODO: Mention backoff.
+
 This implementation uses the lock-free memory management by invented by \citeauthor{valois1996lock}
 \cite{valois1995lock,valois1996lock} and corrected by \citeauthor{michael1995correction} 
 \cite{michael1995correction}. It was chosen in particular because this scheme can guarantee validity
@@ -425,6 +429,19 @@ consisting of a SkipList protected by a single global lock.
 
 \subsection{Linden \& Jonsson} \label{sec:linden}
 
+One of the most recent priority queue implementations was published by \citeauthor{linden2013skiplist}
+in \citeyear{linden2013skiplist} \cite{linden2013skiplist}. They present a linearizable, lock-free concurrent priority
+queue which achieves a speed-up of $30-80\%$ compared to other SkipList-based concurrent priority queues by
+minimizing the number of \ac{CAS} operations within most \lstinline|DeleteMin| operations.
+
+A priority queue implementation is called deterministic when the algorithm does not contain randomized elements.
+It is called strict when \lstinline|DeleteMin| is guaranteed to return the minimal element currently within the queue
+(as opposed to relaxed data structures which are discussed further in the next section).
+All such priority queues share an inherent bottleneck, since all threads calling \lstinline|DeleteMin| compete
+for the minimal element, causing both contention through concurrent \ac{CAS} operations on the same variable
+as well as serialization effort by the cache coherence protocol for all other processor accessing the same cache
+line.
+
 \begin{figure}[h]
 \begin{lstlisting}
 struct node_t {
@@ -435,6 +452,11 @@ struct node_t {
 \caption{\citeauthor{linden2013skiplist} structure.}
 \label{fig:lindensl}
 \end{figure}
+
+As in Section \ref{sec:sundell}, deletion flags are packed into each node's pointers. However,
+% Deletion flag only on next[0]!
+
+%  ``Entirely limited by logical deletion in DeleteMin''
 
  % Mention the BoundOffset parameter (p17), and benching using Fraser-based impls.
 
