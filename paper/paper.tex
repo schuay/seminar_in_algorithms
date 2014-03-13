@@ -442,9 +442,9 @@ struct node_t {
 
 The body of work discussed in previous sections
 creates the impression that limits of strict, deterministic priority queues have been reached.
-In particular, \citeauthor{} conclude that scalability is solely limited by \lstinline|DeleteMin|,
+In particular, \citeauthor{linden2013skiplist} conclude that scalability is solely limited by \lstinline|DeleteMin|,
 and that less than one modified memory location per thread and operation would have to be read
-in order to achieve improved performance \cite{}. % TODO: Cites for this entire section.
+in order to achieve improved performance \cite{linden2013skiplist}. % TODO: Cites for this entire section.
 
 Recently, relaxation of provided guarantees have been investigated as another method of reducing
 contention and improving disjoint-access parallelism.
@@ -453,9 +453,23 @@ speed-ups compared to strict FIFO queues by allowing \lstinline|Dequeue| to retu
 up to k positions out of order.
 
 Relaxation has also been applied to concurrent priority queues with some success, and in the following
-sections we discuss two different approaches.
+sections we discuss two such approaches.
 
 \subsection{Wimmer} \label{sec:wimmer}
+
+\citeauthor{wimmer2013data} presented the first relaxed, linearizable, and lock-free priority queue
+in \cite{wimmer2013data}. An open-source implementation is available in the task-scheduling system
+\emph{Pheet}\footnote{\url{http://pheet.org}}.
+
+The \citeauthor{wimmer2013data} priority queue was evaluated using a label-correcting variant
+of Dijkstra's shortest path algorithm \cite{}. Their model creates a task for each node
+expansion, and therefore comes with a considerable task scheduling overhead. Nonetheless,
+the parallel implementation scales well up to 10 threads, and further limited performance
+gains are made until 40 threads. To date, no direct comparisons to other concurrent
+priority queues have been possible since the data structure is strongly tied to \emph{Pheet},
+but a separate implementation of k-priority queues is planned.
+
+
 \subsection{SprayList} \label{sec:spraylist}
 
 \section{Performance Results}
