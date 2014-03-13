@@ -510,10 +510,11 @@ queue implementations:
       \textbf{Noble} is lock-free, based on SkipLists, and limited to unique priorities.
       According to the authors, the commercial Noble library includes a more efficient
       version of this data structure that can also handle duplicate priority values.
-\item \textbf{Linden} Original code for the \citeauthor{linden2013skiplist} priority queue \cite{linden2013skiplist}
-      is available under an open source license\footnote{\url{http://user.it.uu.se/~jonli208/priorityqueue}}.
+\item \textbf{Linden} Code for the \citeauthor{linden2013skiplist} priority queue \cite{linden2013skiplist}
+      is provided by the authors under an open source license\footnote{\url{http://user.it.uu.se/~jonli208/priorityqueue}}.
       It is lock-free, SkipList-based, and uses \citeauthor{fraser2004practical}'s lock-free
-      SkipList implementation.
+      SkipList implementation. The aim of this implementation is to minimize contention in
+      calls to \lstinline|DeleteMin|.
 \end{itemize}
 
 In each test run, the examined priority queue was initially filled with $2^{15}$
