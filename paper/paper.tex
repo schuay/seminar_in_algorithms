@@ -553,6 +553,8 @@ item has already been deleted. When a non-deleted item is popped, it is atomical
 and returned to the caller. If instead we are faced with an empty local queue, we attempt to spy,
 i.e. copy items from another thread's local list.
 
+% TODO: Memory management.
+
 The \citeauthor{wimmer2013data} priority queue was evaluated using a label-correcting variant
 of Dijkstra's shortest path algorithms. Their model creates a task for each node
 expansion, and therefore comes with a considerable task scheduling overhead. Nonetheless,
@@ -670,10 +672,39 @@ Additional notes:
 
 \section{Related Work}
 
-% Bounded priority queues
+There have been many publications on more specialized variants of concurrent priority queues
+which we did not cover in this paper.
+
 % PQ's with non-available primitives
+
+\citeauthor{liu2012lock} present a lock-free, array-based priority queue in \cite{liu2012lock}
+using the non-standard \ac{DCAS} and \ac{DCSS} instructions. In addition to the standard
+\lstinline|Insert| and \lstinline|DeleteMin| operations, it also provides an \lstinline|ExtractMany|
+function which returns the $n$ highest priority items in the queue, and a function that returns
+items which ``probably'' have high priority. Other implementations based on non-standard instructions
+can be found in \cite{israeli1993efficient,greenwald1999non}.
+
+% Bounded priority queues
+
+Another possibility is the restriction of priorities to a particular set, i.e. bounded range priorities.
+\citeauthor{shavit1999scalable} present two such data structures in \cite{shavit1999scalable} using
+combining funnels and bins of items.
+
+% PQ's in message passing systems (see SprayList reviews)
+
+Concurrent priority queues have also been studied in other contexts such as distributed memory systems.
+\citeauthor{karp1993randomized} describe a distributed priority queue in which each processor owns
+a local priority queue, inserts are sent to a random priority queue, and \lstinline|DeleteMin| operations
+simply access the local queue \cite{karp1993randomized}.
+\citeauthor{sanders1998randomized} extends this idea to remove the globally best elements instead
+\cite{sanders1998randomized}.
+
 % Other relaxed data structures -> k-FIFO
-% ... ?
+
+Finally, the principle of relaxation has also been applied to other data structures.
+\citeauthor{kirsch2012fast} invented an efficient k-FIFO queue \cite{kirsch2012fast},
+% TODO: More cites.
+
 
 \begin{comment}
   * hunt: most efficient old-school algorithm
