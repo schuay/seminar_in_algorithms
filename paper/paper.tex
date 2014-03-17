@@ -294,7 +294,7 @@ are required. As an additional requirement, these memory management schemes must
 be both scalable and lock-free to avoid limiting the SkipList itself.
 \citeauthor{fraser2004practical} in particular employs lock-free epoch-based garbage-collection.
 
-\subsection{Shavit \& Lotan} \label{sec:shavit}
+\subsection{\citeauthor{shavit2000skiplist}} \label{sec:shavit}
 
 \citeauthor{shavit2000skiplist} were the first to propose the use of SkipLists
 for priority queues \cite{linden2013skiplist}. Their initial implementation
@@ -362,7 +362,7 @@ that a) the new variant is based on a lock-free skiplist, b) the timestamping me
 employed and thus linearizability was lost, and c) explicit memory management is not required
 because the Java virtual machine provides a garbage collector.
 
-\subsection{Sundell \& Tsigas} \label{sec:sundell}
+\subsection{\citeauthor{sundell2003fast}} \label{sec:sundell}
 
 \citeauthor{sundell2003fast} proposed the first lock-free concurrent priority queue in
 \citeyear{sundell2003fast} \cite{sundell2003fast}. The data structure is linearizable
@@ -427,7 +427,7 @@ Benchmarks performed by \citeauthor{sundell2003fast} show their queue performing
 queues from Sections \ref{sec:shavit} and \ref{sec:hunt}, and slightly better than a priority queue
 consisting of a SkipList protected by a single global lock.
 
-\subsection{Linden \& Jonsson} \label{sec:linden}
+\subsection{\citeauthor{linden2013skiplist}} \label{sec:linden}
 
 One of the most recent priority queue implementations was published by \citeauthor{linden2013skiplist}
 in \citeyear{linden2013skiplist} \cite{linden2013skiplist}. They present a linearizable, lock-free concurrent priority
@@ -477,7 +477,7 @@ up to k positions out of order.
 Relaxation has also been applied to concurrent priority queues with some success, and in the following
 sections we discuss two such approaches.
 
-\subsection{Wimmer} \label{sec:wimmer}
+\subsection{\citeauthor{wimmer2013data}} \label{sec:wimmer}
 
 \citeauthor{wimmer2013data} presented the first relaxed, linearizable, and lock-free priority queue
 in \cite{wimmer2013data}. An open-source implementation is available in the task-scheduling system
