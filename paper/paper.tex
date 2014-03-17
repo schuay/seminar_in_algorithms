@@ -272,7 +272,7 @@ Heap in most cases \cite{hunt1996efficient,sundell2003fast}. Speed-up only occur
 the size of the Heap reaches a certain threshold such that concurrency
 can be properly exploited (instead of being dominated by global locking overhead).
 
-\section{Lock-free Priority Queues}
+\section{Lock-free Priority Queues} \label{sec:lockfree}
 
 Traditional data structures such as the Heap have fallen out of favor;
 instead, SkipLists \cite{pugh1990skip,pugh1998concurrent} have become the focus
@@ -563,12 +563,51 @@ but a separate implementation of k-priority queues is planned.
 
 \subsection{SprayList} \label{sec:spraylist}
 
+The SprayList is another recent approach towards a relaxed priority queue by \citeauthor{alistarhspraylist}
+\cite{alistarhspraylist}. Instead of the distributed approach described in the previous section,
+the SprayList is based on a central data structure, and uses a random walk in \lstinline|DeleteMin|
+in order to spread accesses over the $O(P \log^3 P)$ first elements with high probability, where $P$
+is again the number of participating threads.
+
+\citeauthor{fraser2004practical}'s lock-free SkipList \cite{fraser2004practical} again serves as the
+basis for the priority queue implementation. The full source code is available online\footnote{
+\url{https://github.com/jkopinsky/SprayList}}. In the SprayList, \lstinline|Insert| calls are simply
+forwarded to the underlying SkipList.
+
+The \lstinline|DeleteMin| operation however executes a random walk, also called a \emph{spray}, the
+purpose of which is to spread accesses over a certain section of the SkipList uniformly such that
+collisions between multiple concurrent \lstinline|DeleteMin| calls are unlikely. This is achieved by
+starting at some initial height, walking a randomized number of steps, descending a randomized number of levels,
+and repeating this procedure until a node $n$ is reached on the lowest level. If $n$ is not deleted,
+it is logically deleted and returned. Otherwise, a \emph{spray} is either reattempted, or the thread
+becomes a cleaner, traversing the lowest level of the SkipList and physically removing logically deleted
+nodes it comes across. A number of dummy nodes are added to the beginning of the list in order to counteract
+the algorithm's bias against initial items.
+
+The \emph{spray} parameters are chosen such that with high probability, one of the $O(P \log^3 P)$
+first elements is returned, and that each of these elements is chosen roughly uniformly at random.
+The final effect is that accesses to the data structure are spread out, reducing contention and resulting
+in a noticeably lower number of \ac{CAS} failures in comparison to strict priority queues described
+in Section \ref{sec:lockfree}.
+
+The authors do not provide any statement as to the linearizability (or other concurrent correctness
+criteria) of the SprayList, and it is not completely clear how to define it since no
+sequential semantics are given.
+
+Benchmarks show promising results: the SprayList scales well at least up to 80 threads,
+and performs close (within a constant factor) to an implementation using a random remove instead
+of \lstinline|DeleteMin|, which the authors consider as the performance ideal.
+
+% Maybe mention that P log^3 P is a very loose bound.
+
 \section{Performance Results}
 
 In this section, we compare the performance of several different concurrent priority
 queue implementations:
 
 \begin{itemize}
+\item \textbf{GlobalLock} An instance of the \lstinline|std::priority_queue<T>| class provided
+      by the C++ standard library, protected by a single global lock.
 \item \textbf{Hunt} \citeauthor{hunt1996efficient} provide an implementation
       of their Heap-based design \cite{hunt1996efficient} at \url{ftp://ftp.cs.rochester.edu/pub/packages/concurrent_heap/}.
       However, as the original code was written for the MIPS architecture, we chose to
@@ -584,17 +623,25 @@ queue implementations:
       It is lock-free, SkipList-based, and uses \citeauthor{fraser2004practical}'s lock-free
       SkipList implementation. The aim of this implementation is to minimize contention in
       calls to \lstinline|DeleteMin|.
+\item \textbf{SprayList} A relaxed concurrent priority queue based on \citeauthor{fraser2004practical}'s
+      SkipList using random walks to spread data accesses
+      incurred by \lstinline|DeleteMin| calls. Code provided by \citeauthor{alistarhspraylist} is
+      available on Github\footnote{\url{https://github.com/jkopinsky/SprayList}}.
 \end{itemize}
 
 In each test run, the examined priority queue was initially filled with $2^{15}$
 elements. We then ran a tight loop of $50\%$ insertions and $50\%$ deletions
 for a total of $10$ seconds, where all \lstinline|Insert|
 operations within this context implicitly choose a key uniformly at random from
-the range of all 32-bit integers. Each run was repeated for a total of $10$ times %TODO: Verify this.
+the range of all 32-bit integers. This methodology seems to be the de facto standard for concurrent % TODO: Similar phrasing as linden :(
+priority queue benchmarks
+\cite{alistarhspraylist,linden2013skiplist,shavit2000skiplist,sundell2003fast}.
+Each run was repeated for a total of $10$ times
 and we report on the average throughput.
 
-All benchmarks were compiled with \verb|-O3| on GCC 4.8.2. Evaluations took place
-on an 80-core Intel Xeon machine.
+All benchmarks were compiled with \verb|-O3| using GCC 4.8.2. Evaluations took place
+on an 80-core Intel Xeon machine. The benchmarking code was adapted from \citeauthor{linden2013skiplist}'s
+benchmarking suite and is available at \url{https://github.com/schuay/seminar_in_algorithms}.
 
 % TODO: Figures, interpretation. Mention that Noble requires pointers -> new/delete.
 % Better hardware description - see SprayList section 4, Linden p16.
