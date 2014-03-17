@@ -453,12 +453,40 @@ struct node_t {
 \label{fig:lindensl}
 \end{figure}
 
-As in Section \ref{sec:sundell}, deletion flags are packed into each node's pointers. However,
-% Deletion flag only on next[0]!
+In this implementation, \lstinline|DeleteMin| operations only perform logical deletion by setting
+the deletion flag with a single \ac{FAO} call; nodes are only deleted physically once a certain
+threshold of logically deleted nodes is reached.
 
-%  ``Entirely limited by logical deletion in DeleteMin''
+This mechanism requires a new invariant, in that the set of all logically deleted nodes must always
+form a prefix of the SkipList. Recall that in the \citeauthor{sundell2003fast} queue, deletion flags
+for node \lstinline|n| were packed into \lstinline|n.next| pointers, preventing insertion of new
+nodes \emph{after} deleted nodes. This implementation instead places the deletion flag into the
+lowest level \lstinline|next| pointer of the previous node, preventing inserations \emph{before}
+logically deleted nodes.
 
- % Mention the BoundOffset parameter (p17), and benching using Fraser-based impls.
+Once the prefix of logically deleted nodes reaches a specified length \lstinline|BoundOffset|,
+the first thread to observe this fact within \lstinline|DeleteMin| performs the actual physical
+deletions by updating \lstinline|slist.head[0]| to point at the last logically deleted node with a
+single \ac{FAO} operation. The remaining \lstinline|slist.head| pointers are then updated, and
+all physically deleted nodes are marked for recycling.
+
+Since at any time, the data structure contains a prefix of logically deleted nodes, all \lstinline|DeleteMin|
+operations must traverse this sequence before reaching a non-deleted node. In general, reads of nonmodified
+memory locations are very cheap; however, benchmarks in \cite{linden2013skiplist} have shown that
+after a certain point, the effort spent in long read sequences significantly outweighs the reduced
+number of \ac{CAS} calls. It is therefore crucial to choose \lstinline|BoundOffset| carefully, with the
+authors recommending a prefix length bound of 128 for 32 threads.
+
+The actual \lstinline|DeleteMin| and \lstinline|Insert| implementations are surprisingly simple.
+Deletions simply traverse the list until the first node for which \lstinline|(ptr, d) = FAO((node.next[0], d), 1)|
+returns a previously unset deletion flag (\lstinline|d = 0|) and then return \lstinline|ptr|.
+Insertions occur bottom-up and follow the basic \citeauthor{fraser2004practical} algorithm \cite{fraser2004practical},
+taking the separation of deletion flags and nodes into account.
+
+The authors provide high level correctness and linearizability proofs as well as a model for the
+SPIN model checker. Performance has been shown to compare favorably to both
+\citeauthor{sundell2003fast} and \citeauthor{shavit2000skiplist} queues, with throughput improved by
+up to $80\%$.
 
 \section{Relaxed Priority Queues}
 
