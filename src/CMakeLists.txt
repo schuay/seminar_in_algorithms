@@ -13,6 +13,7 @@ add_library(linden STATIC
 )
 
 add_executable(pqbench
+    globallock.cpp
     heap.cpp
     linden.cpp
     noble.cpp

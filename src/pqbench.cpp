@@ -4,6 +4,7 @@
 #include <hwloc.h>
 #include <random>
 
+#include "globallock.h"
 #include "heap.h"
 #include "linden.h"
 #include "noble.h"
@@ -20,6 +21,7 @@
 static std::atomic<bool> loop;
 static std::atomic<int> wait_barrier;
 
+static GlobalLock pq_globallock;
 static Heap pq_heap(DEFAULT_SIZE << 2);
 static Noble pq_noble;
 static Linden pq_linden(DEFAULT_OFFSET);
@@ -55,7 +57,7 @@ usage(FILE *out,
         "Options:\n", argv0);
 
     fprintf(out, "\t-h\t\tDisplay usage.\n");
-    fprintf(out, "\t-q QUEUE\tRun benchmarks on queue of type TYPE (heap|linden|noble).\n");
+    fprintf(out, "\t-q QUEUE\tRun benchmarks on queue of type TYPE (globallock|heap|linden|noble).\n");
     fprintf(out, "\t-t SECS\t\tRun for SECS seconds. "
         "Default: %i\n",
         DEFAULT_SECS);
@@ -155,6 +157,10 @@ main(int argc __attribute__ ((unused)),
     if (type_str == nullptr) {
         usage(stderr, argv[0]);
         exit(EXIT_FAILURE);
+    } else if (strcmp(type_str, "globallock") == 0) {
+        ins = [](const uint32_t v) { pq_globallock.insert(v); };
+        del = [](uint32_t &v) { return pq_globallock.delete_min(v); };
+        pq_init(pq_globallock, init_size);
     } else if (strcmp(type_str, "heap") == 0) {
         ins = [](const uint32_t v) { pq_heap.insert(v); };
         del = [](uint32_t &v) { return pq_heap.delete_min(v); };
