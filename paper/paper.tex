@@ -104,26 +104,21 @@ all related to each other?  Do all of your tenses match up in a paragraph?
 \end{comment}
 
 \begin{abstract}
-On the 24th of February, 1815, the watch-tower of Notre-Dame de la Garde
-signalled the arrival of the three-master Pharaon, from Smyrna, Trieste, 
-and Naples.
+Priority queues are abstract data structures which store a set of (priority, item) pairs
+and allow efficient access to the item with minimal priority. Such queues are an important
+element in various areas of computer science such as algorithmics (i.e. Dijkstra's shortest
+path algorithm) and operating system (priority schedulers).
 
-The usual crowd of curious spectators immediately filled the quay of Fort 
-Saint-Jean, for at Marseilles the arrival of a ship is always a great event, 
-especially when that ship, as was the case with the Pharaon, has been built, 
-rigged, and laden in the dockyard of old Phocaea and belongs to a shipowner 
-of their own town.
+The recent trend towards multiprocessor computing requires new implementations of basic
+data structures which are able to be used concurrently and ideally scale well to a large number
+of threads. In particular, lock-free structures promise superior scalability by avoiding
+the use of blocking synchronization primitives.
 
-Meanwhile the vessel drew on, and was approaching the harbour under topsails, 
-jib, and foresail, but so slowly and with such an air of melancholy that the 
-spectators, always ready to sense misfortune, began to ask one another what 
-ill-luck had overtaken those on board. However, those experienced in navigation 
-soon saw that if there had been any ill-luck, the ship had not been the 
-sufferer, for she advanced in perfect condition and under skilful handling; 
-the anchor was ready to be dropped, the bowsprit shrouds loose. 
-Beside the pilot, who was steering the Pharaon through the narrow entrance to 
-the port, there stood a young man, quick of gesture and keen of eye, who 
-watched every movement of the ship while repeating each of the pilot's orders.
+Concurrent priority queues have been extensively researched over the past decades.
+In this paper, we discuss three major ideas within the field: fine-grained locking
+employs multiple locks to avoid a single bottleneck within the queue; SkipLists
+are search structures which use randomization and therefore do not require elaborate reorganization
+schemes; and relaxed data structures trade semantic guarantees for improved scalability.
 \end{abstract}
 
 \section{Introduction}
