@@ -1,3 +1,6 @@
+# Squelch warnings in ugly external code.
+set(CFLAGS_NO_WARNINGS "-Wno-unused-parameter -Wno-type-limits -Wno-overflow -Wno-format -Wno-pedantic -Wno-sign-compare -Wno-unused-but-set-variable -Wno-long-long -Wno-unused-function -Wno-implicit-function-declaration -Wno-unused-variable")
+
 include_directories(
     ${Boost_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -10,6 +13,10 @@ add_library(linden STATIC
     ${CMAKE_SOURCE_DIR}/lib/linden/prioq.c
     ${CMAKE_SOURCE_DIR}/lib/linden/gc/gc.c
     ${CMAKE_SOURCE_DIR}/lib/linden/gc/ptst.c
+)
+
+set_target_properties(linden PROPERTIES COMPILE_FLAGS
+    "-std=c99 ${CFLAGS_NO_WARNINGS}"
 )
 
 add_library(spraylist STATIC
@@ -28,7 +35,7 @@ target_include_directories(spraylist PUBLIC
 )
 
 set_target_properties(spraylist PROPERTIES COMPILE_FLAGS
-    "-DLOCKFREE -DSSALLOC_USE_MALLOC"
+    "-DLOCKFREE -DSSALLOC_USE_MALLOC ${CFLAGS_NO_WARNINGS}"
 )
 
 add_executable(pqbench
