@@ -737,6 +737,26 @@ Finally, the principle of relaxation has also been applied to other data structu
 
 \section{Conclusion} \label{sec:conclusion}
 
+Priority queues are one of the most important abstract data structures in computer science,
+and much effort has been put into parallelizing them efficiently. In this paper,
+we have outlined the evolution of concurrent priority queues from initial heap-based designs,
+through a period of increasingly efficient SkipList queues, to current research into relaxed data structures.
+
+The switch from heaps to SkipLists as the backing data structure highlights how a simple change in
+direction can help revitalize an entire field of research. SkipList-based priority queues are the current
+state of the art in strict shared-memory concurrent priority queues: they provide strong guarantees
+and scale well to up to the ten's of threads in practice. Important limiting factors are contention
+at the front of the list and the large number of \ac{CAS} failures.
+The \citeauthor{linden2013skiplist} queue is designed
+to minimize the latter factor; but the former is inherent to all strict priority queues, which could mean
+that the peak performance in such structures has been reached.
+
+Recently invented relaxed priority queues do not exhibit the inherent bottleneck at the front of the list,
+as they do not necessarily return the minimal element within the queue and are able to spread
+\lstinline|DeleteMin| accesses over a larger area of the structure. In consequence, relaxed queues scale noticeable
+better and to larger thread counts than strict designs. Further research is necessary in order to fully
+explore the possibilities provided by relaxed data structures.
+
 \begin{comment}
 http://leo.stcloudstate.edu/acadwrite/conclude.html
 http://writingcenter.unc.edu/handouts/conclusions/
