@@ -5,9 +5,11 @@ import subprocess
 
 from optparse import OptionParser
 
-ALGORITHMS = [ 'heap'
+ALGORITHMS = [ 'globallock'
+             , 'heap'
              , 'noble'
              , 'linden'
+             , 'spraylist'
              ]
 
 NCPUS = [  1,  2,  3
