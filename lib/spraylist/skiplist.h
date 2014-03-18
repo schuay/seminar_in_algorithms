@@ -37,6 +37,7 @@
 
 #include "tm.h"
 #include "ssalloc.h"
+#include "utils.h"
 
 #define DEFAULT_DURATION                1000
 #define DEFAULT_INITIAL                 1024
