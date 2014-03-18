@@ -60,7 +60,7 @@ extern uint8_t levelmax[64];
 
 #define TRANSACTIONAL                   d->unit_tx
 
-typedef unsigned long val_t;
+typedef uint32_t val_t;
 typedef intptr_t level_t;
 #define VAL_MIN                         INT_MIN
 #define VAL_MAX                         INT_MAX
