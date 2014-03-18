@@ -14,6 +14,8 @@
 \definecolor{Gray}{gray}{0.5}
 \definecolor{OliveGreen}{cmyk}{0.64,0,0.95,0.40}
 
+\pdfstringdefDisableCommands{\def\citeauthor#1{#1}}
+
 \lstset{
     language=C++,
     basicstyle=\ttfamily,
@@ -144,25 +146,30 @@ of situations such as shortest path algorithms and scheduling. % See liu2012lock
 
 % Concurrent priority queues - heaps, trees, skiplists.
 
-Concurrent priority queues have been the subject of research since the 1980s.
+Concurrent priority queues have been the subject of research since the 1980s
+\cite{ayani1990lr,biswas1987simultaneous,das1996distributed,deo1992parallel,huang1991evaluation,
+luchetti1993some,mans1998portable,olariu1991optimal,prasad1995parallel}.
 While early efforts have focused mostly on parallelizing Heap structures
 \cite{hunt1996efficient}, % TODO: Many more, see \cite{shavit2000skiplist}
 more recently priority queues based on \citeauthor{pugh1990skip}'s SkipLists
 \cite{pugh1990skip} seem to show more potential \cite{shavit2000skiplist,
-sundell2003fast,herlihy2012art,linden2013skiplist}.
+sundell2003fast,herlihy2012art,linden2013skiplist}. Current research has also examined
+relaxed data structures \cite{wimmer2013data,alistarhspraylist} which trade
+the strictness of provided guarantees against improved scalability.
 
 % Our plan for the paper - somehow this kind of duplicates the last paragraph though.
 
-In the following, we examine the evolution of concurrent priority queues. We begin
-with first steps which used fine-grained locking to avoid the bottleneck of a single
-global lock. Initial SkipList-based structures offered better disjoint-access
-parallelism, and finally current state of the art lock-free priority queues minimize
-contention in \lstinline|DeleteMin|.
+In the following, we examine the evolution of concurrent priority queues suitable for general use,
+i.e. unbounded range queues based on widely available atomic primitives such as \ac{CAS}.
+Section \ref{sec:concepts} outlines basic concepts and definitions. In Section \ref{sec:hunt},
+we cover the \citeauthor{hunt1996efficient} queue as a representative of early heap-based queues using
+fine-grained locking to avoid the bottleneck of a single global lock. Lock-free SkipList-based
+structures offering better disjoint-access parallelism are discussed in Section \ref{sec:lockfree},
+while Section \ref{sec:relaxed} introduces the concept of relaxed data structures and presents two
+such priority queues. Finally, related work is presented in Section \ref{sec:related}, and the paper is
+concluded in Section \ref{sec:conclusion}.
 
-% TODO: Mention what we don't cover: non-general PQs, unavailable primitives, ...
-% TODO: In section x, we ... Again, this partially duplicates the last paragraph.
-
-\section{Concepts and Definitions}
+\section{Concepts and Definitions} \label{sec:concepts}
 
 % Blocking, lock-free and wait-free data structures.
 
@@ -172,8 +179,10 @@ a critical section at once. \emph{Lock-free} data structures eschew the use of l
 that at least a single process makes progress at all times. Since lock-free structures are
 non-blocking, they are not susceptible to priority inversion, deadlock, and livelock.
 \emph{Wait-freedom} further guarantees that every process finishes each operation in a bounded number of steps. 
-In practise, wait-freedom often introduces an unacceptable overhead; lock-freedom
+In practice, wait-freedom often introduces an unacceptable overhead; lock-freedom
 however has proven to be both efficient and to scale well to large numbers of processes.
+Recently, \citeauthor{kogan2012methodology} have also developed a methodology for implementing efficient
+wait-free data structures \cite{kogan2012methodology}.
 
 % Linearizability, sequential and quiescent consistency.
 
@@ -191,7 +200,7 @@ after a period of quiescence, i.e. an interval without active operations has pas
 % Disjoint-access parallelism.
 
 An area in memory accessed frequently by a large number of processes is said to be \emph{contended}.
-Contention is an limiting factor regarding scalability: concurrent reads and writes to the same 
+Contention is a limiting factor regarding scalability: concurrent reads and writes to the same
 location must be serialized by the cache coherence protocol, and only a single concurrent \ac{CAS} % TODO: Short section on primitives.
 can succeed while all others must retry. \emph{Disjoint-access parallelism} is the concept of
 spreading such accesses in order to reduce contention as much as possible. 
@@ -209,7 +218,7 @@ environment.
 % SkipLists.
 
 SkipLists \cite{pugh1990skip} have become increasingly popular in concurrent data structures because 
-they are both simple and exhibit excellent disjoint-access parallelism. In contrast to
+they are both simple to implement, and exhibit excellent disjoint-access parallelism. In contrast to
 search trees and Heaps, reorganization is not necessary, since SkipLists rely on
 randomization for an expected $O(\log n)$ complexity of \lstinline|Insert|, \lstinline|Search|
 and \lstinline|Delete| operations.
@@ -223,7 +232,7 @@ according to a geometric distribution; deletion simply removes the node.
 
 % TODO: Maybe integrate into description - otherwise remove. Do we need further detail?
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \begin{lstlisting}
 struct slist_t {
   size_t max_level;
@@ -247,6 +256,10 @@ bool slist_delete(slist_t *l, key_t k, value_t &v);
 
 \section{Fine-grained Locking Heaps} \label{sec:hunt}
 
+In the remaining paper, we will discuss implementations of several concurrent priority queue implementations.
+Early designs have mostly been based on search trees \cite{boyar1994chromatic,johnson1991highly} and
+heaps \cite{ayani1990lr,biswas1987simultaneous,das1996distributed,deo1992parallel,huang1991evaluation,
+luchetti1993some,mans1998portable,olariu1991optimal,prasad1995parallel}.
 We chose the priority queue by \citeauthor{hunt1996efficient} \cite{hunt1996efficient}
 as a representative of early concurrent priority queues since it has been proven to
 perform well \cite{shavit2000skiplist} in comparison to other efforts of the time such as \cite{nageshwara1988concurrent,ayani1990lr,yan1998lock}. % Many others \cite{shavit2000skiplist}.
@@ -263,14 +276,14 @@ once a certain amount of traffic is reached, since only subsequent insertions
 are guaranteed to take disjoint paths towards the root node. Note also that
 the root node is a severe serial bottleneck, since it is potentially part of
 every insertion path, and necessarily of every \lstinline|DeleteMin| operation.
-Finally, in contrast to later SkipList-based designs, the capacity of Hunt Heap
+Finally, in contrast to later dynamic SkipList-based designs, the capacity of Hunt Heap
 is fixed upon creation.
 
 Benchmarking results in the literature have been mixed; a sequential priority
 queue protected by a single global lock outperforms the \citeauthor{hunt1996efficient}
 Heap in most cases \cite{hunt1996efficient,sundell2003fast}. Speed-up only occurs once
 the size of the Heap reaches a certain threshold such that concurrency
-can be properly exploited (instead of being dominated by global locking overhead).
+can be properly exploited instead of being dominated by global locking overhead.
 
 \section{Lock-free Priority Queues} \label{sec:lockfree}
 
@@ -279,10 +292,10 @@ instead, SkipLists \cite{pugh1990skip,pugh1998concurrent} have become the focus
 of modern concurrent priority queue research
 \cite{shavit2000skiplist,sundell2003fast,herlihy2012art,linden2013skiplist,alistarhspraylist}.
 SkipLists are both conceptual simple as well as simple to implement; they also exhibit
-excellent disjoint-access properties, and do not require rebalancing due to their
-reliance on randomization for expected $O(\log n)$ time insertion and deletion bounds.
+excellent disjoint-access parallelism properties, and do not require rebalancing due to their
+reliance on randomization.
 
-A state of the art lock-free SkipList implementation based on \ac{CAS}
+A state of the art lock-free SkipList implementation based on the \ac{CAS} instruction
 by \citeauthor{fraser2004practical} \cite{fraser2004practical} is freely available\footnote{
 \url{http://www.cl.cam.ac.uk/research/srg/netos/lock-free/}} under a BSD license.
 \citeauthor{fraser2004practical} exploits unused pointer bits to mark nodes as logically
@@ -291,15 +304,18 @@ deleted, with physical deletion following as a second step.
 SkipLists are dynamic data structures in the sense that they grow and shrink
 at runtime. In consequence, careful handling of memory accesses and (de)allocations
 are required. As an additional requirement, these memory management schemes must
-be both scalable and lock-free to avoid limiting the SkipList itself.
-\citeauthor{fraser2004practical} in particular employs lock-free epoch-based garbage-collection.
+themselves be both scalable and lock-free to avoid limiting the SkipList itself.
+\citeauthor{fraser2004practical} in particular employs lock-free epoch-based garbage-collection,
+which frees a memory segment only once all threads that could have seen a pointer to it have
+exited the data structure.
+
 
 \subsection{\citeauthor{shavit2000skiplist}} \label{sec:shavit}
 
 \citeauthor{shavit2000skiplist} were the first to propose the use of SkipLists
-for priority queues \cite{linden2013skiplist}. Their initial implementation
+for priority queues \cite{linden2013skiplist}. Their initial locking implementation
 \cite{shavit2000skiplist} builds on \citeauthor{pugh1998concurrent}'s concurrent
-SkipList \cite{pugh1998concurrent} which uses one lock per node per level.
+SkipList \cite{pugh1998concurrent}, which uses one lock per node per level.
 
 % TODO: This counts for all skiplist impls.
 
@@ -307,9 +323,10 @@ A crucial observation is that nodes nodes which are only partially connected
 do not affect correctness of the data structure. As soon as the first level (i.e. \lstinline|node.level[0]|)
 has been successfully connected, a node is considered to be in the SkipList.
 Therefore, both insertions and deletions can be split into steps --- insertions
-proceed bottom-up while deletions proceed top-down, holding locks only for the current level.
+proceed bottom-up while deletions proceed top-down. Locks are held only for the current level
+which helps to reduce contention between threads.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \begin{lstlisting}
 struct node_t {
   [...] /**< Standard node members as above. */
@@ -322,8 +339,8 @@ struct node_t {
 \label{fig:shavitsl}
 \end{figure}
 
-Likewise, deletions are split into a logical phase, atomically setting the \lstinline|node.deleted|
-flag; and a physical phase performs the actual pointer manipulations and can be seen as a simple
+Likewise, deletions are split into a logical phase (atomically setting the \lstinline|node.deleted|
+flag) and a physical phase which performs the actual pointer manipulations and can be seen as a simple
 call to the underlying SkipList's \lstinline|sl_delete| function.
 
 A \lstinline|DeleteMin| call starts the list head, and attempts to atomically set
@@ -336,7 +353,7 @@ If the end of the list is reached, \lstinline|DeleteMin| returns false to indica
 
 Note that so far, this implementation is not linearizable: consider the case in which a
 slow thread A is in the middle of a \lstinline|DeleteMin| call. Within this context, we refer to 
-the node with key $i$ as ``node $i$'', or simply $i$. Several \lstinline|CAS|
+the node with key $i$ as node $i$, or simply $i$. Several \lstinline|CAS|
 operations have failed, and A is currently at node $j$.
 A fast thread B then first inserts a node $i$, followed by a node $k$ such that
 $i < j < k$, i.e. the former and latter nodes are inserted, respectively, before and after
@@ -346,7 +363,7 @@ it is quiescently consistent since operations can be reordered to correspond to 
 execution at quiescent periods.
 
 \citeauthor{shavit2000skiplist} counteract this by introducing a \lstinline|timestamp| for each
-node which is set upon successful insertion. Each \lstinline|DeleteMin| operation 
+node which is set upon successful insertion. In this variant, each \lstinline|DeleteMin| operation
 simply ignores all nodes it sees that have not been fully inserted at the time it was called.
 
 % TODO: Linearizability points.
@@ -356,8 +373,8 @@ by other threads after physical deletion. This implementation uses a dedicated g
 thread in combination with a timestamping mechanism which frees \lstinline|node|'s memory only
 when all threads that might have seen a pointer to \lstinline|node| have exited the data structure.
 
-\citeauthor{herlihy2012art} \cite{herlihy2012art} later described and implemented a variant of this idea 
-in Java that is lock-free and quiescently consistent. While mostly identical, notable differences are
+\citeauthor{herlihy2012art} \cite{herlihy2012art} recently described and implemented a lock-free,
+quiescently consistent version of this idea in Java. While mostly identical, notable differences are
 that a) the new variant is based on a lock-free skiplist, b) the timestamping mechanism was not
 employed and thus linearizability was lost, and c) explicit memory management is not required
 because the Java virtual machine provides a garbage collector.
@@ -368,11 +385,12 @@ because the Java virtual machine provides a garbage collector.
 \citeyear{sundell2003fast} \cite{sundell2003fast}. The data structure is linearizable
 and is implemented using commonly available atomic primitives \ac{CAS}, \ac{TAS}, and \ac{FAA}.
 In contrast to other structures covered in this paper, this priority queue is restricted to
-contain items with pairwise distinct priorities.
+contain items with pairwise distinct priorities. Inserting a new item with a priority already contained
+in the list simply performs an update of the associated value.
 A real-time version is also provided which will we will not discuss further (interested readers are
 referred to \cite{sundell2003fast}).
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \begin{lstlisting}
 struct node_t {
   [...] /**< Standard node members as above. */
@@ -386,10 +404,8 @@ struct node_t {
 
 The structure of each node is basically identical to Figure \ref{fig:basicsl}. However, \citeauthor{sundell2003fast}
 exploit the fact that the two least significant bits of pointers on 32- and 64-bit systems
-are unused and reuse pointers as deletion marks. A set least significant bit signifies on a pointer signifies
-that the current node is about to be deleted. We will use the notation 
-\lstinline|CAS(node.level[i], (ptr, false), (ptr, true))| to signify \ac{CAS} operations on the
-combined pointer \& flag fields.
+are unused and reuse these as deletion marks. A set least significant bit signifies on a pointer signifies
+that the current node is about to be deleted.
 Reuse of \lstinline|node.level[i]| pointers
 prevents situations in which a new node is inserted while its predecessor is being removed,
 effectively deleting both nodes from the list. Likewise, the reuse of the \lstinline|node.value|
@@ -418,8 +434,7 @@ of \lstinline|prev| as well as all \lstinline|next| pointers. Additionally, it d
 garbage collector thread.
 
 A rigorous linearizability proof is provided in the original paper \cite{sundell2003fast} which shows
-linearizability points for all possible outcomes of both \lstinline|Insert| and \lstinline|DeleteMin|
-operations.
+linearization points for all possible outcomes of all operations.
 
 % TODO: Further details?
 
@@ -431,18 +446,18 @@ consisting of a SkipList protected by a single global lock.
 
 One of the most recent priority queue implementations was published by \citeauthor{linden2013skiplist}
 in \citeyear{linden2013skiplist} \cite{linden2013skiplist}. They present a linearizable, lock-free concurrent priority
-queue which achieves a speed-up of $30-80\%$ compared to other SkipList-based concurrent priority queues by
+queue which achieves a speed-up of $30-80\%$ compared to other SkipList-based priority queues by
 minimizing the number of \ac{CAS} operations within most \lstinline|DeleteMin| operations.
 
 A priority queue implementation is called deterministic when the algorithm does not contain randomized elements.
 It is called strict when \lstinline|DeleteMin| is guaranteed to return the minimal element currently within the queue
-(as opposed to relaxed data structures which are discussed further in the next section).
+(in contrast to relaxed data structures which are discussed further in the next section).
 All such priority queues share an inherent bottleneck, since all threads calling \lstinline|DeleteMin| compete
 for the minimal element, causing both contention through concurrent \ac{CAS} operations on the same variable
 as well as serialization effort by the cache coherence protocol for all other processor accessing the same cache
 line.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \begin{lstlisting}
 struct node_t {
   [...] /**< Standard node members as above. */
@@ -466,7 +481,7 @@ nodes \emph{after} deleted nodes. This implementation instead places the deletio
 lowest level \lstinline|next| pointer of the previous node, preventing inserations \emph{before}
 logically deleted nodes.
 
-Once the prefix of logically deleted nodes reaches a specified length {\lstset{breaklines,breakatwhitespace} \lstinline|BoundOffset|},
+Once the prefix of logically deleted nodes reaches a specified length (represented by \lstinline|BoundOffset|),
 the first thread to observe this fact within \lstinline|DeleteMin| performs the actual physical
 deletions by updating \lstinline|slist.head[0]| to point at the last logically deleted node with a
 single \ac{FAO} operation. The remaining \lstinline|slist.head| pointers are then updated, and
@@ -490,7 +505,7 @@ SPIN model checker. Performance has been shown to compare favorably to both
 \citeauthor{sundell2003fast} and \citeauthor{shavit2000skiplist} queues, with throughput improved by
 up to $80\%$.
 
-\section{Relaxed Priority Queues}
+\section{Relaxed Priority Queues} \label{sec:relaxed}
 
 The body of work discussed in previous sections
 creates the impression that the outer limits of strict, deterministic priority queues have been reached.
@@ -521,7 +536,7 @@ a guarantee that no thread misses more than $kP$ items where $P$ is the number o
 In this section, we examine only the hybrid variant since it provides both the scalability of work-stealing
 queues and the ordering guarantees of the centralized priority queue.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \begin{lstlisting}
 struct globals_t {
   list_of_item_t global_list;
@@ -543,7 +558,7 @@ sequential priority queue per thread. The thread-local counter \lstinline|remain
 items may be added to the local queue until all local items must be made globally visible to avoid
 breaking guarantees.
 
-Whenever an item is added, it is first added to both \lstinline|local_list| and \lstinline|prio_queue|
+Whenever an item is added, it is first added locally to both \lstinline|local_list| and \lstinline|prio_queue|
 and \lstinline|remaining_k| is decremented. If \lstinline|remaining_k| reaches zero, then the local
 item list is appended to the global list, and all not yet seen (by this thread) items of the global
 queue are added to the local priority queue.
@@ -670,7 +685,7 @@ Additional notes:
 * Modern developments: SprayList, Wimmer et al. Relation to other relaxed structures such as k-FIFO.
 \end{comment}
 
-\section{Related Work}
+\section{Related Work} \label{sec:related}
 
 There have been many publications on more specialized variants of concurrent priority queues
 which we did not cover in this paper.
@@ -720,7 +735,7 @@ Finally, the principle of relaxation has also been applied to other data structu
     * probabilistic extractMin, extractMany: [9]
 \end{comment}
 
-\section{Conclusion}
+\section{Conclusion} \label{sec:conclusion}
 
 \begin{comment}
 http://leo.stcloudstate.edu/acadwrite/conclude.html
