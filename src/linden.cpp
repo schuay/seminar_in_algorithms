@@ -20,13 +20,13 @@ Linden::Linden(const int max_offset)
 Linden::~Linden()
 {
 	pq_destroy(m_q);
+    _destroy_gc_subsystem();
 }
 
 void
 Linden::insert(const uint32_t v)
 {
 	linden_insert(m_q, v);
-	_destroy_gc_subsystem();
 }
 
 bool
