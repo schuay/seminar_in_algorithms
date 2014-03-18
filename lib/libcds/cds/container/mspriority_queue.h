@@ -421,7 +421,7 @@ namespace cds { namespace container {
         void clear()
         {
 #       ifdef CDS_CXX11_LAMBDA_SUPPORT
-            clear_with( []( value_type const& src ) {} ) ;
+            clear_with( []( value_type const& ) {} ) ;
 #       else
             clear_with( empty_cleaner() ) ;
 #       endif

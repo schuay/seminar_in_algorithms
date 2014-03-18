@@ -74,7 +74,7 @@ rand_range(long r)
 
 /* Re-entrant version of rand_range(r) */
 static inline long
-rand_range_re(unsigned int *seed, long r) 
+rand_range_re(unsigned int *seed __attribute__ ((unused)), long r)
 {
   /* PF_START(0); */
 #if defined(LOCAL_RAND)

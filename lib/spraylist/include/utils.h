@@ -222,14 +222,6 @@ extern "C" {
 #  define CORES_PER_SOCKET 8
 #  define CACHE_LINE_SIZE 64
 #  define NOP_DURATION 1
-  static uint8_t  the_cores[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 
-    8, 9, 10, 11, 12, 13, 14, 15, 
-    16, 17, 18, 19, 20, 21, 22, 23, 
-    24, 25, 26, 27, 28, 29, 30, 31, 
-    32, 33, 34, 35, 36, 37, 38, 39, 
-    40, 41, 42, 43, 44, 45, 46, 47  
-  };
   static uint8_t __attribute__ ((unused)) the_sockets[] = 
   {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -252,7 +244,7 @@ extern "C" {
   //debugging functions
 #ifdef DEBUG
 #  define DPRINT(args...) fprintf(stderr,args);
-#  define DDPRINT(fmt, args...) printf("%s:%s:%d: "fmt, __FILE__, __FUNCTION__, __LINE__, args)
+#  define DDPRINT(fmt, args...) printf("%s:%s:%d: " fmt, __FILE__, __FUNCTION__, __LINE__, args)
 #else
 #  define DPRINT(...)
 #  define DDPRINT(fmt, ...)
@@ -346,7 +338,7 @@ extern "C" {
 
   //getticks needs to have a correction because the call itself takes a
   //significant number of cycles and skewes the measurement
-  extern inline ticks getticks_correction_calc();
+  extern ticks getticks_correction_calc();
 
   static inline ticks get_noop_duration() {
 #define NOOP_CALC_REPS 1000000

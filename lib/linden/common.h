@@ -1,6 +1,6 @@
 #ifndef COMMON_H
 #define COMMON_H
-#define _GNU_SOURCE
+
 #include <inttypes.h>
 #include <unistd.h>
 #include <assert.h>
