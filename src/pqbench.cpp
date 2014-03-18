@@ -8,6 +8,7 @@
 #include "heap.h"
 #include "linden.h"
 #include "noble.h"
+#include "spraylist.h"
 
 #undef max /* Clash between macro and limits. */
 #undef min
@@ -25,6 +26,7 @@ static GlobalLock pq_globallock;
 static Heap pq_heap(DEFAULT_SIZE << 2);
 static Noble pq_noble;
 static Linden pq_linden(DEFAULT_OFFSET);
+static SprayList pq_spraylist;
 
 typedef void (*fn_insert)(const uint32_t);
 typedef bool (*fn_delete_min)(uint32_t &);
@@ -57,7 +59,7 @@ usage(FILE *out,
         "Options:\n", argv0);
 
     fprintf(out, "\t-h\t\tDisplay usage.\n");
-    fprintf(out, "\t-q QUEUE\tRun benchmarks on queue of type TYPE (globallock|heap|linden|noble).\n");
+    fprintf(out, "\t-q QUEUE\tRun benchmarks on queue of type TYPE (globallock|heap|linden|noble|spraylist).\n");
     fprintf(out, "\t-t SECS\t\tRun for SECS seconds. "
         "Default: %i\n",
         DEFAULT_SECS);
@@ -98,6 +100,9 @@ run(void *args)
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> rand_int;
     std::uniform_int_distribution<> rand_bool(0, 1);
+
+    /* Special handling for SprayList. */
+    pq_spraylist.init_thread(as->nthreads);
 
     pin_to_core(as->id);
 
@@ -173,6 +178,10 @@ main(int argc __attribute__ ((unused)),
         ins = [](const uint32_t v) { pq_noble.insert(v); };
         del = [](uint32_t &v) { return pq_noble.delete_min(v); };
         pq_init(pq_noble, init_size);
+    } else if (strcmp(type_str, "spraylist") == 0) {
+        ins = [](const uint32_t v) { pq_spraylist.insert(v); };
+        del = [](uint32_t &v) { return pq_spraylist.delete_min(v); };
+        pq_init(pq_spraylist, init_size);
     } else {
         usage(stderr, argv[0]);
         exit(EXIT_FAILURE);
@@ -187,6 +196,7 @@ main(int argc __attribute__ ((unused)),
     thread_args_t *t;
     for (int i = 0; i < nthreads && (t = &ts[i]); i++) {
         t->id = i;
+        t->nthreads = nthreads;
         pthread_create(&t->thread, NULL, run, t);
     }
 

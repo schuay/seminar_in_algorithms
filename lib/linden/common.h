@@ -44,6 +44,7 @@
 typedef struct thread_args_s
 {
     pthread_t thread;
+    size_t nthreads;
     int id;
     gsl_rng *rng;
     int measure;
