@@ -135,7 +135,7 @@ that take advantage of concurrent execution on multiple threads and processors.
 This paper focuses on the priority queue data structure, consisting of two operations
 traditionally called \lstinline|Insert| and \lstinline|DeleteMin|. \lstinline|Insert|
 places an item into the queue together with its priority, while \lstinline|DeleteMin|
-removes and returns the highest priority item. Both of these operations are expected to have
+removes and returns the lowest priority item. Both of these operations are expected to have
 a complexity of at most $O(\log n)$. Priority queues are used in a large variety
 of situations such as shortest path algorithms and scheduling. % See liu2012lock for more.
 
@@ -203,7 +203,7 @@ spreading such accesses in order to reduce contention as much as possible.
 % Priority queues.
 
 Priority queues are an abstract data structure allowing insertion of items with a given priority
-and removal of the highest-priority item in logarithmic time. Search trees and Heaps (which are 
+and removal of the lowest-priority item in logarithmic time. Search trees and Heaps (which are
 flattened representations of complete trees such that each node's value is at least as large as
 those of both children) are concrete data structures which are usually used to implement sequential
 priority queues. However, both require fairly elaborate reorganization after \lstinline|DeleteMin|
