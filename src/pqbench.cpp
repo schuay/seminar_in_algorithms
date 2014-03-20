@@ -16,7 +16,7 @@
 #define DEFAULT_SECS     (10)
 #define DEFAULT_NTHREADS (1)
 #define DEFAULT_OFFSET   (128)
-#define DEFAULT_SIZE     (1 << 20)
+#define DEFAULT_SIZE     (1 << 15)
 #define DEFAULT_VERBOSE  (false)
 
 static std::atomic<bool> loop;
