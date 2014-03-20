@@ -4,6 +4,7 @@
 \usepackage[backend=bibtex]{biblatex}
 \usepackage{default}
 \usepackage[utf8]{inputenc}
+\usepackage{listings}
 \usepackage{lmodern}
 
 \input{../common/acronyms}
@@ -37,6 +38,32 @@ Hello
 % --------------------------------------------------------------------------------------------------
 \section{Related Work}
 % --------------------------------------------------------------------------------------------------
+
+\begin{frame}{Related Work}
+\begin{itemize}
+\item Non-standard synchronization primitives
+    \begin{itemize}
+    \item \citeauthor{liu2012lock}: Array-based PQ with \lstinline|ExtractMany|
+    \item \citeauthor{israeli1993efficient}: Wait-free PQ
+    \end{itemize}
+
+\item Bounded range priorities
+    \begin{itemize}
+    \item \citeauthor{shavit1999scalable}: Combining funnels \& bins
+    \end{itemize}
+
+\item PQs in distributed memory systems
+    \begin{itemize}
+    \item \citeauthor{sanders1998randomized}: Local PQs, \lstinline|Insert| at random processor
+    \end{itemize}
+
+\item Relaxed data structures
+    \begin{itemize}
+    \item \citeauthor{kirsch2012fast}: k-FIFO queues
+    \end{itemize}
+
+\end{itemize}
+\end{frame}
 
 % --------------------------------------------------------------------------------------------------
 \section{Concepts and Definitions}
