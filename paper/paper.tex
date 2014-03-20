@@ -107,10 +107,10 @@ all related to each other?  Do all of your tenses match up in a paragraph?
 Priority queues are abstract data structures which store a set of (priority, item) pairs
 and allow efficient access to the item with minimal priority. Such queues are an important
 element in various areas of computer science such as algorithmics (i.e. Dijkstra's shortest
-path algorithm) and operating system (priority schedulers).
+path algorithm) and operating system (i.e. priority schedulers).
 
 The recent trend towards multiprocessor computing requires new implementations of basic
-data structures which are able to be used concurrently and ideally scale well to a large number
+data structures which are able to be used concurrently and scale well to a large number
 of threads. In particular, lock-free structures promise superior scalability by avoiding
 the use of blocking synchronization primitives.
 
@@ -150,11 +150,11 @@ more recently priority queues based on \citeauthor{pugh1990skip}'s SkipLists
 \cite{pugh1990skip} seem to show more potential \cite{shavit2000skiplist,
 sundell2003fast,herlihy2012art,linden2013skiplist}. Current research has also examined
 relaxed data structures \cite{wimmer2013data,alistarhspraylist} which trade
-the strictness of provided guarantees against improved scalability.
+strictness of provided guarantees against improved scalability.
 
 % Our plan for the paper - somehow this kind of duplicates the last paragraph though.
 
-In the following, we examine the evolution of concurrent priority queues suitable for general use,
+In the following, we investigate the evolution of concurrent priority queues suitable for general use,
 i.e. unbounded range queues based on widely available atomic primitives such as \ac{CAS}.
 Section \ref{sec:concepts} outlines basic concepts and definitions. In Section \ref{sec:hunt},
 we cover the \citeauthor{hunt1996efficient} queue as a representative of early heap-based queues using
@@ -683,12 +683,12 @@ Additional notes:
 \section{Related Work} \label{sec:related}
 
 There have been many publications on more specialized variants of concurrent priority queues
-which we did not cover in this paper.
+which were not covered in this paper.
 
 % PQ's with non-available primitives
 
 \citeauthor{liu2012lock} present a lock-free, array-based priority queue in \cite{liu2012lock}
-using the non-standard \ac{DCAS} and \ac{DCSS} instructions. In addition to the standard
+using the non-standard \ac{DCAS} and \ac{DCSS} instructions. In addition to the
 \lstinline|Insert| and \lstinline|DeleteMin| operations, it also provides an \lstinline|ExtractMany|
 function which returns the $n$ highest priority items in the queue, and a function that returns
 items which ``probably'' have high priority. Other implementations based on non-standard instructions
@@ -698,7 +698,8 @@ can be found in \cite{israeli1993efficient,greenwald1999non}.
 
 Another possibility is the restriction of priorities to a particular set, i.e. bounded range priorities.
 \citeauthor{shavit1999scalable} present two such data structures in \cite{shavit1999scalable} using
-combining funnels and bins of items.
+combining funnels and bins of items. Experimental results have shown strong scalability until at least
+256 threads.
 
 % PQ's in message passing systems (see SprayList reviews)
 
@@ -713,7 +714,8 @@ simply access the local queue \cite{karp1993randomized}.
 
 Finally, the principle of relaxation has also been applied to other data structures.
 \citeauthor{kirsch2012fast} invented an efficient k-FIFO queue \cite{kirsch2012fast},
-% TODO: More cites.
+The trend towards relaxed data structures in general is examined further in
+\cite{shavit2011data,kirsch2012incorrect}.
 
 
 \begin{comment}
@@ -740,10 +742,10 @@ through a period of increasingly efficient SkipList queues, to current research 
 The switch from heaps to SkipLists as the backing data structure highlights how a simple change in
 direction can help revitalize an entire field of research. SkipList-based priority queues are the current
 state of the art in strict shared-memory concurrent priority queues: they provide strong guarantees
-and scale well to up to the ten's of threads in practice. Important limiting factors are contention
+and scale well to up to the tens of threads in practice. Important limiting factors are contention
 at the front of the list and the large number of \ac{CAS} failures.
 The \citeauthor{linden2013skiplist} queue is designed
-to minimize the latter factor; but the former is inherent to all strict priority queues, which could mean
+to minimize the latter; but the former is inherent to all strict priority queues, which could mean
 that the peak performance in such structures has been reached.
 
 Recently invented relaxed priority queues do not exhibit the inherent bottleneck at the front of the list,
