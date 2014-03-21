@@ -4,6 +4,7 @@
 \usepackage[backend=bibtex]{biblatex}
 \usepackage[usenames,dvipsnames]{color}
 \usepackage{comment}
+\usepackage{graphicx}
 \usepackage[pdfborder={0 0 0}]{hyperref}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
@@ -654,6 +655,63 @@ and we report on the average throughput.
 All benchmarks were compiled with \verb|-O3| using GCC 4.8.2. Evaluations took place
 on an 80-core Intel Xeon machine. The benchmarking code was adapted from \citeauthor{linden2013skiplist}'s
 benchmarking suite and is available at \url{https://github.com/schuay/seminar_in_algorithms}.
+
+\begin{center}
+<<results = tex, echo = FALSE>>=
+library(Rmisc)
+library(ggplot2)
+library(plyr)
+library(scales)
+
+figfile <- "fig.eps"
+
+# install.packages(c("Rmisc", "ggplot2", "plyr"))
+
+df <- read.csv("../results/results.csv")
+colnames(df) <- c("kernel", "p", "throughput")
+
+df$throughput <- df$throughput/1E6
+
+df2 <- ddply(df, .(kernel, p), summarize, mean = mean(throughput),
+             lower = CI(throughput)[[3]], upper = CI(throughput)[[1]])
+
+# Bar graph
+
+# dodge <- position_dodge(width=0.9)
+# p <- ggplot(df2, aes(x = factor(p), y = mean, fill = factor(kernel))) +
+#             geom_bar(stat = "identity", position = dodge) +
+#             geom_errorbar(aes(ymin = lower, ymax = upper), position = dodge, width = 0.3) +
+#             ylab("throughput [Mops/s]") +
+#             xlab("number of threads")
+
+p <- ggplot(df2, aes(x = p, y = mean, color = kernel, shape = kernel)) +
+            geom_line() +
+            geom_point(size = 4) +
+#            geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.3) +
+            ylab("throughput in Mops/s") +
+            xlab("number of threads") +
+# Themes
+            theme_bw() +
+            theme(axis.text = element_text(size = 16),
+                  axis.title = element_text(size = 18),
+                  legend.text = element_text(size = 16),
+                  legend.title = element_text(size = 18),
+                  legend.position = c(1, 1),
+                  legend.justification = c(1, 1),
+                  legend.background = element_rect(fill = alpha("black", 0)))
+
+postscript(file = figfile, paper = "special", width = 10, height = 5, horizontal = FALSE)
+plot(p)
+invisible(dev.off())
+cat("\\includegraphics[width = \\textwidth]{", figfile, "}\n\n", sep = "")
+
+# PDF output
+
+# pdf("abcd.pdf", width=10, height=10)
+# plot(p)
+# dev.off()
+@
+\end{center}
 
 % TODO: Figures, interpretation. Mention that Noble requires pointers -> new/delete.
 % Better hardware description - see SprayList section 4, Linden p16.
