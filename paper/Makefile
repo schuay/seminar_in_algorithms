@@ -1,12 +1,21 @@
 PROJECT = paper
 
-all: $(PROJECT)
+R      = R
+LATEX  = pdflatex
+BIBTEX = bibtex
 
-$(PROJECT): $(PROJECT).tex ../common/acronyms.tex ../common/bibliography.bib
-	pdflatex $(PROJECT).tex
-	bibtex $(PROJECT).aux
-	pdflatex $(PROJECT).tex
-	pdflatex $(PROJECT).tex
+RFILE = $(PROJECT).Rnw
+AFILE = $(RFILE:.Rnw=.aux)
+LFILE = $(RFILE:.Rnw=.tex)
+PDF   = $(RFILE:.Rnw=.pdf)
+
+all: $(PDF)
+
+$(PDF): $(RFILE) ../common/acronyms.tex ../common/bibliography.bib
+	$(R) CMD Sweave $(RFILE)
+	$(LATEX) $(LFILE)
+	$(BIBTEX) $(AFILE)
+	$(LATEX) $(LFILE)
 
 clean:
-	rm -f $(PROJECT)-blx.bib $(PROJECT).{aux,bbl,blg,log,out} $(PROJECT).run.xml
+	rm -f $(PROJECT)-blx.bib $(PROJECT).{aux,bbl,blg,log,out,tex} $(PROJECT).run.xml
