@@ -6,6 +6,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
 \usepackage{lmodern}
+\usepackage{textcomp}
 
 \input{../common/acronyms}
 \bibliography{../common/bibliography.bib}
@@ -44,8 +45,8 @@
 \section{Introduction}
 % --------------------------------------------------------------------------------------------------
 
-\begin{frame}[fragile]{Introduction}
-Priority Queues (PQs):
+\begin{frame}[fragile,allowframebreaks]{Introduction}
+\acp{PQ}:
 
 \begin{itemize}
 \item Standard abstract data structure
@@ -58,6 +59,47 @@ bool DeleteMin(pq_t *pq, value_t *v)
 \end{lstlisting}
 
 \item Typical backing data structures: heaps \& search trees
+\end{itemize}
+
+\framebreak
+
+\begin{itemize}
+\item In the past decade, processor clock speeds have remained the same, trend towards multiple cores
+\item New data structures required to take advantage of concurrent execution
+\item The topic of this presentation: efficient concurrent \acp{PQ}
+\item Fine-grained locking \textrightarrow ~ Lock-free \textrightarrow ~ Relaxed data structures
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Terminology}
+\begin{itemize}
+\item Safety conditions: nothing bad has happened yet
+    \begin{itemize}
+    \item \emph{Linearizability}: operations appear to take effect at a single point in time, the linearization point
+    \item \emph{Quiescent consistency}: in a period of quiescence, semantics equivalent to some sequential ordering
+    \item And others, i.e. \emph{sequential consistency}, \emph{serializability}
+    \end{itemize}
+
+\framebreak
+
+\item Liveness conditions: something good eventually happens
+    \begin{itemize}
+    \item \emph{Lock-freedom}: at least a single process makes progress at all times
+    \item \emph{Wait-freedom}: every process finishes in a bounded number of steps
+    \item Further liveness conditions: \emph{Starvation-freedom}, \emph{Deadlock-freedom}
+    \end{itemize}
+
+\framebreak
+
+\item \emph{Disjoint-access parallelism}: how well a data structure handles concurrent use by multiple
+      threads within disjoint areas
+\item Synchronization primitives:
+    \begin{itemize}
+    \item \ac{CAS}, \ac{FAA}, \ac{FAO}, \ac{TAS}
+    \item \ac{DCAS}, \ac{DCSS}
+    \end{itemize}
+
 \end{itemize}
 
 \end{frame}
