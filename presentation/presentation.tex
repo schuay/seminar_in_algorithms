@@ -140,6 +140,8 @@ bool DeleteMin(pq_t *pq, value_t *v)
 % --------------------------------------------------------------------------------------------------
 
 \begin{frame}{\nameref{sec:locking}}
+\framesubtitle{\citeauthor{hunt1996efficient}}
+
 \begin{itemize}
 \item Naive PQ parallelization: single global lock \textrightarrow ~ sequential bottleneck
 \item A first improvement: fine-grained locking using a lock per node
@@ -148,7 +150,7 @@ bool DeleteMin(pq_t *pq, value_t *v)
 \end{frame}
 
 \begin{frame}{\nameref{sec:locking}}
-\framesubtitle{Innovations}
+\framesubtitle{\citeauthor{hunt1996efficient}: Innovations}
 
 \begin{itemize}
 \item One lock per node, \emph{but} additionally a global lock protecting the heap's
@@ -159,7 +161,7 @@ bool DeleteMin(pq_t *pq, value_t *v)
 \end{frame}
 
 \begin{frame}{\nameref{sec:locking}}
-\framesubtitle{Limitations}
+\framesubtitle{\citeauthor{hunt1996efficient}: Limitations}
 
 \begin{itemize}
 \item A global lock remains
@@ -176,7 +178,76 @@ bool DeleteMin(pq_t *pq, value_t *v)
 % --------------------------------------------------------------------------------------------------
 
 \begin{frame}{\nameref{sec:lockfree}}
+\framesubtitle{SkipLists}
 
+\begin{itemize}
+\item Modern concurrent PQs are mostly based on \citeauthor{pugh1990skip}'s SkipList
+\item Probabilistic ordered search structure, insertions and deletions in expected $O(\log n)$ time
+\item No reorganizations
+\item Simple implementation
+\item Excellent disjoint-access properties
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\nameref{sec:lockfree}}
+\framesubtitle{SkipLists}
+
+\begin{itemize}
+\item Collection of linked lists with corresponding levels
+\item Lowest list contains all items, higher lists are shortcuts
+\item \lstinline|Insert| chooses a \lstinline|level| according to geometric distribution
+\end{itemize}
+
+\begin{lstlisting}
+struct slist_t {
+  size_t max_level;
+  node_t head[max_level];
+};
+struct node_t {
+  key_t key;
+  value_t value;
+  size_t level;
+  node_t *next[level];
+};
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}{\nameref{sec:lockfree}}
+\framesubtitle{\citeauthor{shavit2000skiplist}}
+
+\begin{itemize}
+\item First SkipList-based PQ
+\item \fullcite{shavit2000skiplist}
+\item Initially lock-based, lock-free variant published in 2008
+\item \fullcite{herlihy2012art}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\nameref{sec:lockfree}}
+\framesubtitle{\citeauthor{shavit2000skiplist}}
+
+\begin{itemize}
+\item Items are considered in the list once inserted on bottom level
+\item Again, insertions bottom-up and deletions top-down
+\item Deletions are split
+    \begin{itemize}
+    \item Logical deletion sets a \lstinline|deleted| flag
+    \item Physical deletion performs actual pointer manipulations
+    \end{itemize}
+\item \lstinline|DeleteMin| attempts to logically delete the head node.
+     On success: delete physically \& return node. Otherwise, continue with
+     next node.
+\item \lstinline|Insert| is equivalent to the SL insertion
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\nameref{sec:lockfree}}
+\framesubtitle{\citeauthor{shavit2000skiplist}}
+
+\begin{itemize}
+\item
+\end{itemize}
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
