@@ -73,26 +73,30 @@ bool DeleteMin(pq_t *pq, value_t *v)
 
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Concepts and Definitions}
+\begin{frame}{Concepts and Definitions}
+\framesubtitle{Safety conditions: nothing bad has happened yet}
+
 \begin{itemize}
-\item Safety conditions: nothing bad has happened yet
-    \begin{itemize}
-    \item \emph{Linearizability}: operations appear to take effect at a single point in time, the linearization point
-    \item \emph{Quiescent consistency}: in a period of quiescence, semantics equivalent to some sequential ordering
-    \item And others, i.e. \emph{sequential consistency}, \emph{serializability}
-    \end{itemize}
+\item \emph{Linearizability}: operations appear to take effect at a single point in time, the linearization point
+\item \emph{Quiescent consistency}: in a period of quiescence, semantics equivalent to some sequential ordering
+\item And others, i.e. \emph{sequential consistency}, \emph{serializability}
+\end{itemize}
+\end{frame}
 
-\framebreak
+\begin{frame}{Concepts and Definitions}
+\framesubtitle{Liveness conditions: something good eventually happens}
 
-\item Liveness conditions: something good eventually happens
-    \begin{itemize}
-    \item \emph{Lock-freedom}: at least a single process makes progress at all times
-    \item \emph{Wait-freedom}: every process finishes in a bounded number of steps
-    \item Further liveness conditions: \emph{Starvation-freedom}, \emph{Deadlock-freedom}
-    \end{itemize}
+\begin{itemize}
+\item \emph{Lock-freedom}: at least a single process makes progress at all times
+\item \emph{Wait-freedom}: every process finishes in a bounded number of steps
+\item Further liveness conditions: \emph{Starvation-freedom}, \emph{Deadlock-freedom}
+\end{itemize}
+\end{frame}
 
-\framebreak
+\begin{frame}{Concepts and Definitions}
+\framesubtitle{Miscellaneous}
 
+\begin{itemize}
 \item \emph{Disjoint-access parallelism}: how well a data structure handles concurrent use by multiple
       threads within disjoint areas
 \item Synchronization primitives:
@@ -100,9 +104,7 @@ bool DeleteMin(pq_t *pq, value_t *v)
     \item \ac{CAS}, \ac{FAA}, \ac{FAO}, \ac{TAS}
     \item \ac{DCAS}, \ac{DCSS}
     \end{itemize}
-
 \end{itemize}
-
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
