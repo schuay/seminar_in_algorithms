@@ -3,12 +3,14 @@
 \usepackage{acronym}
 \usepackage[backend=bibtex]{biblatex}
 \usepackage{default}
+\usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
 \usepackage{lmodern}
 \usepackage{nameref}
 \usepackage{textcomp}
 
+\graphicspath{{figures/}}
 \input{../common/acronyms}
 \bibliography{../common/bibliography.bib}
 
@@ -229,6 +231,15 @@ struct node_t {
 \begin{frame}{\nameref{sec:lockfree}}
 \framesubtitle{\citeauthor{shavit2000skiplist}}
 
+\begin{figure}
+\includegraphics[width=\textwidth]{shavit_lotan}
+\caption{The \citeauthor{shavit2000skiplist} \ac{PQ} (Image source: \cite{shavit2000skiplist})}
+\end{figure}
+\end{frame}
+
+\begin{frame}{\nameref{sec:lockfree}}
+\framesubtitle{\citeauthor{shavit2000skiplist}}
+
 \begin{itemize}
 \item Items are considered in the list once inserted on bottom level
 \item Again, insertions bottom-up and deletions top-down
@@ -241,6 +252,14 @@ struct node_t {
      On success: delete physically \& return node. Otherwise, continue with
      next node.
 \item \lstinline|Insert| is equivalent to the \ac{SL} insertion
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\nameref{sec:lockfree}}
+\framesubtitle{\citeauthor{shavit2000skiplist}}
+
+\begin{itemize}
+\item
 \end{itemize}
 \end{frame}
 
