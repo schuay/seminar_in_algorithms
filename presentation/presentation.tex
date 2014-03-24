@@ -115,8 +115,8 @@ bool DeleteMin(pq_t *pq, value_t *v)
 \begin{itemize}
 \item Non-standard synchronization primitives
     \begin{itemize}
-    \item \citeauthor{liu2012lock}: Array-based PQ with \lstinline|ExtractMany|
-    \item \citeauthor{israeli1993efficient}: Wait-free PQ
+    \item \citeauthor{liu2012lock}: Array-based \ac{PQ} with \lstinline|ExtractMany|
+    \item \citeauthor{israeli1993efficient}: Wait-free \ac{PQ}
     \end{itemize}
 
 \item Bounded range priorities
@@ -124,9 +124,9 @@ bool DeleteMin(pq_t *pq, value_t *v)
     \item \citeauthor{shavit1999scalable}: Combining funnels \& bins
     \end{itemize}
 
-\item PQs in distributed memory systems
+\item \acp{PQ} in distributed memory systems
     \begin{itemize}
-    \item \citeauthor{sanders1998randomized}: Local PQs, \lstinline|Insert| at random processor
+    \item \citeauthor{sanders1998randomized}: Local \acp{PQ}, \lstinline|Insert| at random processor
     \end{itemize}
 
 \item Relaxed data structures
@@ -145,7 +145,7 @@ bool DeleteMin(pq_t *pq, value_t *v)
 \framesubtitle{\citeauthor{hunt1996efficient}}
 
 \begin{itemize}
-\item Naive PQ parallelization: single global lock \textrightarrow ~ sequential bottleneck
+\item Naive \ac{PQ} parallelization: single global lock \textrightarrow ~ sequential bottleneck
 \item A first improvement: fine-grained locking using a lock per node
 \item \fullcite{hunt1996efficient}
 \end{itemize}
@@ -170,7 +170,7 @@ bool DeleteMin(pq_t *pq, value_t *v)
 \item Heap is statically allocated
 \item Frequent complex heap reorganization
 \item Disjoint-access breaks down at high traffic levels
-\item Inherent PQ bottleneck at the minimal node
+\item Inherent \ac{PQ} bottleneck at the minimal node
 \item Benchmarks show only limited scalability up to a low thread count
 \end{itemize}
 \end{frame}
@@ -183,7 +183,7 @@ bool DeleteMin(pq_t *pq, value_t *v)
 \framesubtitle{SkipLists}
 
 \begin{itemize}
-\item Modern concurrent PQs are mostly based on \citeauthor{pugh1990skip}'s SkipList
+\item Modern concurrent \acp{PQ} are mostly based on \citeauthor{pugh1990skip}'s \ac{SL}
 \item Probabilistic ordered search structure, insertions and deletions in expected $O(\log n)$ time
 \item No reorganizations
 \item Simple implementation
@@ -219,7 +219,7 @@ struct node_t {
 \framesubtitle{\citeauthor{shavit2000skiplist}}
 
 \begin{itemize}
-\item First SkipList-based PQ
+\item First SkipList-based \ac{PQ}
 \item \fullcite{shavit2000skiplist}
 \item Initially lock-based, lock-free variant published in 2008
 \item \fullcite{herlihy2012art}
@@ -240,7 +240,7 @@ struct node_t {
 \item \lstinline|DeleteMin| attempts to logically delete the head node.
      On success: delete physically \& return node. Otherwise, continue with
      next node.
-\item \lstinline|Insert| is equivalent to the SL insertion
+\item \lstinline|Insert| is equivalent to the \ac{SL} insertion
 \end{itemize}
 \end{frame}
 
