@@ -140,7 +140,35 @@ bool DeleteMin(pq_t *pq, value_t *v)
 % --------------------------------------------------------------------------------------------------
 
 \begin{frame}{\nameref{sec:locking}}
+\begin{itemize}
+\item Naive PQ parallelization: single global lock \textrightarrow ~ sequential bottleneck
+\item A first improvement: fine-grained locking using a lock per node
+\item \fullcite{hunt1996efficient}
+\end{itemize}
+\end{frame}
 
+\begin{frame}{\nameref{sec:locking}}
+\framesubtitle{Innovations}
+
+\begin{itemize}
+\item One lock per node, \emph{but} additionally a global lock protecting the heap's
+      \lstinline|size| variable
+\item Insertions bottom-up, deletions top-down to reduce contention
+\item Successive insertions take disjoint paths towards the root
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\nameref{sec:locking}}
+\framesubtitle{Limitations}
+
+\begin{itemize}
+\item A global lock remains
+\item Heap is statically allocated
+\item Frequent complex heap reorganization
+\item Disjoint-access breaks down at high traffic levels
+\item Inherent PQ bottleneck at the minimal node
+\item Benchmarks show only limited scalability up to a low thread count
+\end{itemize}
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
