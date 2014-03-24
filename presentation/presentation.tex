@@ -6,6 +6,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
 \usepackage{lmodern}
+\usepackage{nameref}
 \usepackage{textcomp}
 
 \input{../common/acronyms}
@@ -42,10 +43,10 @@
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
-\section{Introduction}
+\section{Introduction} \label{sec:intro}
 % --------------------------------------------------------------------------------------------------
 
-\begin{frame}[fragile,allowframebreaks]{Introduction}
+\begin{frame}[fragile,allowframebreaks]{\nameref{sec:intro}}
 \acp{PQ}:
 
 \begin{itemize}
@@ -72,7 +73,7 @@ bool DeleteMin(pq_t *pq, value_t *v)
 
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Terminology}
+\begin{frame}[allowframebreaks]{Concepts and Definitions}
 \begin{itemize}
 \item Safety conditions: nothing bad has happened yet
     \begin{itemize}
@@ -105,10 +106,10 @@ bool DeleteMin(pq_t *pq, value_t *v)
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
-\section{Related Work}
+\section{Related Work} \label{sec:related}
 % --------------------------------------------------------------------------------------------------
 
-\begin{frame}{Related Work}
+\begin{frame}{\nameref{sec:related}}
 \begin{itemize}
 \item Non-standard synchronization primitives
     \begin{itemize}
@@ -135,30 +136,42 @@ bool DeleteMin(pq_t *pq, value_t *v)
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
-\section{Concepts and Definitions}
+\section{Fine-grained Locking Heaps} \label{sec:locking}
 % --------------------------------------------------------------------------------------------------
 
-% --------------------------------------------------------------------------------------------------
-\section{Fine-grained Locking Heaps}
-% --------------------------------------------------------------------------------------------------
+\begin{frame}{\nameref{sec:locking}}
+
+\end{frame}
 
 % --------------------------------------------------------------------------------------------------
-\section{Lock-free Priority Queues}
+\section{Lock-free Priority Queues} \label{sec:lockfree}
 % --------------------------------------------------------------------------------------------------
 
-% --------------------------------------------------------------------------------------------------
-\section{Relaxed Priority Queues}
-% --------------------------------------------------------------------------------------------------
+\begin{frame}{\nameref{sec:lockfree}}
+
+\end{frame}
 
 % --------------------------------------------------------------------------------------------------
-\section{Conclusion}
+\section{Relaxed Priority Queues} \label{sec:relaxed}
 % --------------------------------------------------------------------------------------------------
 
+\begin{frame}{\nameref{sec:relaxed}}
+
+\end{frame}
+
 % --------------------------------------------------------------------------------------------------
-\section{References}
+\section{Conclusion} \label{sec:conclusion}
 % --------------------------------------------------------------------------------------------------
 
-\begin{frame}[allowframebreaks]{References}
+\begin{frame}{\nameref{sec:conclusion}}
+
+\end{frame}
+
+% --------------------------------------------------------------------------------------------------
+\section{References} \label{sec:references}
+% --------------------------------------------------------------------------------------------------
+
+\begin{frame}[allowframebreaks]{\nameref{sec:references}}
 \printbibliography
 \end{frame}
 
