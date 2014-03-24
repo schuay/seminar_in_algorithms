@@ -315,7 +315,7 @@ SkipList \cite{pugh1998concurrent}, which uses one lock per node per level.
 
 % TODO: This counts for all skiplist impls.
 
-A crucial observation is that nodes nodes which are only partially connected
+A crucial observation is that nodes which are only partially connected
 do not affect correctness of the data structure. As soon as the first level (i.e. \lstinline|node.level[0]|)
 has been successfully connected, a node is considered to be in the SkipList.
 Therefore, both insertions and deletions can be split into steps --- insertions
@@ -347,7 +347,7 @@ If the end of the list is reached, \lstinline|DeleteMin| returns false to indica
 
 % Logical/physical deletion separation allows concurrent physical deletions.
 
-Note that so far, this implementation is not linearizable: consider the case in which a
+Note that so far this implementation is not linearizable: consider the case in which a
 slow thread A is in the middle of a \lstinline|DeleteMin| call. Within this context, we refer to 
 the node with key $i$ as node $i$, or simply $i$. Several \lstinline|CAS|
 operations have failed, and A is currently at node $j$.
