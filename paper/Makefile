@@ -11,7 +11,7 @@ PDF   = $(RFILE:.Rnw=.pdf)
 
 all: $(PDF)
 
-$(PDF): $(RFILE) ../common/acronyms.tex ../common/bibliography.bib ../results/results.csv
+$(PDF): $(RFILE) ../common/acronyms.tex ../common/bibliography.bib ../common/pqplot.Rnw ../results/results.csv
 	$(R) CMD Sweave $(RFILE)
 	$(LATEX) $(LFILE)
 	$(BIBTEX) $(AFILE)
