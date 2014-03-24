@@ -273,12 +273,38 @@ struct node_t {
 \framesubtitle{\citeauthor{shavit2000skiplist}}
 
 \begin{itemize}
-\item 
+\item Quiescently consistent, but not linearizable
+    \begin{itemize}
+    \item Slow thread A suspended at deleted key $k$ while in \lstinline|DeleteMin|
+    \item Fast thread B first inserts $k-1$, then $k+1$
+    \item A wakes up and returns $k+1$
+    \item Linearizability would require returning $k-1$
+    \end{itemize}
+
+\item Timestamp mechanism: stamp nodes on successful insertion,
+      \lstinline|DeleteMin| ignores all stamps earlier than its own starting point
+\item Improved scalability, but heavy contention at list head
 \end{itemize}
 \end{frame}
 
 \begin{frame}{\nameref{sec:lockfree}}
-\framesubtitle{\citeauthor{shavit2000skiplist}}
+\framesubtitle{\citeauthor{sundell2003fast}}
+% TODO: Way too much content - skip all except Linden?
+\begin{itemize}
+\item
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\nameref{sec:lockfree}}
+\framesubtitle{\citeauthor{linden2013skiplist}}
+
+\begin{itemize}
+\item
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\nameref{sec:lockfree}}
+\framesubtitle{\citeauthor{linden2013skiplist}}
 
 \begin{itemize}
 \item
@@ -291,6 +317,74 @@ struct node_t {
 
 \begin{frame}{\nameref{sec:relaxed}}
 
+% Intro relaxed
+
+\begin{itemize}
+\item
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\nameref{sec:relaxed}}
+\framesubtitle{\citeauthor{wimmer2013data}}
+
+\begin{itemize}
+\item
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\nameref{sec:relaxed}}
+\framesubtitle{\citeauthor{alistarhspraylist}}
+
+\begin{itemize}
+\item
+\end{itemize}
+\end{frame}
+
+% --------------------------------------------------------------------------------------------------
+\section{Results} \label{sec:Results}
+% --------------------------------------------------------------------------------------------------
+
+\begin{frame}{\nameref{sec:Results}}
+
+\begin{itemize}
+\item All benchmarks were performed on Intel Xeon processors
+\item Each thread repeatedly chooses uniformly at random between
+      \lstinline|Insert| and \lstinline|DeleteMin|
+\item Initial priority queue sizes were $2^{15}$ (Gruber), $10^6$ 
+      (\citeauthor{alistarhspraylist}), and unspecified (\citeauthor{linden2013skiplist})
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\nameref{sec:Results}}
+\framesubtitle{Gruber}
+
+\begin{figure}
+% TODO: Sweave
+\caption{Throughput benchmark results.}
+\end{figure}
+\end{frame}
+
+\begin{frame}{\nameref{sec:Results}}
+\framesubtitle{\citeauthor{linden2013skiplist}}
+
+\begin{figure}
+\includegraphics[width=0.6 \textwidth]{results_linden}
+\caption{Throughput benchmark results.
+\emph{New}: \citeauthor{linden2013skiplist},
+\emph{HaS}: \citeauthor{shavit2000skiplist},
+\emph{SaT}: \citeauthor{sundell2003fast}. 
+(Image source: \cite{linden2013skiplist})}
+\end{figure}
+\end{frame}
+
+\begin{frame}{\nameref{sec:Results}}
+\framesubtitle{\citeauthor{alistarhspraylist}}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{results_spraylist}
+\caption{Throughput benchmark results. 
+(Image source: \cite{alistarhspraylist})}
+\end{figure}
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
@@ -298,7 +392,22 @@ struct node_t {
 % --------------------------------------------------------------------------------------------------
 
 \begin{frame}{\nameref{sec:conclusion}}
+\begin{itemize}
+\item Parallelizing \acp{PQ} is hard
+\item SkipLists currently dominate practical implementations
+\item Main limiting factor are list head accesses in \lstinline|DeleteMin|
+\item \citeauthor{linden2013skiplist} \ac{PQ} is state of the art in strict
+      semantics
+\item Much potential remains in relaxed \acp{PQ} and data structures in general
+      \textrightarrow ~ future research
+\item A standalone version of the \citeauthor{wimmer2013data} \ac{PQ} is planned
+      and will allow direct comparison against related data structures
+\end{itemize}
+\end{frame}
 
+\begin{frame}{\nameref{sec:conclusion}}
+\centering
+Questions?
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
