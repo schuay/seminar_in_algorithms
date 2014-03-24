@@ -359,7 +359,10 @@ struct node_t {
 \framesubtitle{Gruber}
 
 \begin{figure}
-% TODO: Sweave
+<<results = tex, echo = FALSE>>=
+\SweaveInput{../common/pqplot.Rnw}
+pqplot("../results/results.csv")
+@
 \caption{Throughput benchmark results.}
 \end{figure}
 \end{frame}
