@@ -95,7 +95,7 @@ bool DeleteMin(pq_t *pq, value_t *v)
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Concepts and Definitions}
+\begin{frame}[fragile]{Concepts and Definitions}
 \framesubtitle{Miscellaneous}
 
 \begin{itemize}
@@ -107,6 +107,20 @@ bool DeleteMin(pq_t *pq, value_t *v)
     \item \ac{DCAS}, \ac{DCSS}
     \end{itemize}
 \end{itemize}
+
+\begin{lstlisting}
+bool CAS(T *ptr, T *expected, T value) {
+  if (*ptr == *expected) {
+    *ptr = value;
+    return true;
+  } else {
+    *expected = *ptr;
+    return false;
+  }
+}
+\end{lstlisting}
+
+
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
@@ -259,7 +273,7 @@ struct node_t {
 \framesubtitle{\citeauthor{shavit2000skiplist}}
 
 \begin{itemize}
-\item
+\item 
 \end{itemize}
 \end{frame}
 
