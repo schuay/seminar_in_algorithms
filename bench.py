@@ -41,7 +41,7 @@ def bench(algorithm, ncpus, outfile):
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-a", "--algorithms", dest = "algorithms", default = ",".join(ALGORITHMS),
-            help = "Comma-separated list of ['heap', 'noble', 'linden']")
+            help = "Comma-separated list of %s" % ALGORITHMS)
     parser.add_option("-n", "--ncpus", dest = "ncpus", default = ",".join(map(str, NCPUS)),
             help = "Comma-separated list of cpu counts")
     parser.add_option("-o", "--outfile", dest = "outfile", default = '/dev/null',
