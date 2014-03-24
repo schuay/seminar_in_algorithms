@@ -31,6 +31,7 @@ add_library(spraylist STATIC
 
 target_include_directories(spraylist PUBLIC
     ${CMAKE_SOURCE_DIR}/lib/spraylist
+    ${CMAKE_SOURCE_DIR}/lib/spraylist/atomic_ops/
     ${CMAKE_SOURCE_DIR}/lib/spraylist/include
 )
 
