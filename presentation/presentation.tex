@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[usenames,dvipsnames]{beamer}
 
 \usepackage{acronym}
 \usepackage[backend=bibtex]{biblatex}
@@ -11,6 +11,19 @@
 \bibliography{../common/bibliography.bib}
 
 \setbeamertemplate{bibliography item}{}
+
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily,
+    keywordstyle=\color{OliveGreen},
+    commentstyle=\color{Gray},
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=false,
+    showspaces=false,
+    showtabs=false,
+    numbers=none,
+}
 
 \title{Concurrent Priority Queues}
 \subtitle{Seminar in Algorithms, 2013W}
@@ -31,8 +44,22 @@
 \section{Introduction}
 % --------------------------------------------------------------------------------------------------
 
-\begin{frame}{Hello World}
-Hello
+\begin{frame}[fragile]{Introduction}
+Priority Queues (PQs):
+
+\begin{itemize}
+\item Standard abstract data structure
+\item Used widely in algorithmics, operating systems, task scheduling, etc
+\item Interface consists of two $O(\log n)$ operations:
+
+\begin{lstlisting}
+void Insert(pq_t *pq, key_t k, value_t v)
+bool DeleteMin(pq_t *pq, value_t *v)
+\end{lstlisting}
+
+\item Typical backing data structures: heaps \& search trees
+\end{itemize}
+
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
