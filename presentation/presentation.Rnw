@@ -119,8 +119,6 @@ bool CAS(T *ptr, T *expected, T value) {
   }
 }
 \end{lstlisting}
-
-
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
@@ -140,15 +138,22 @@ bool CAS(T *ptr, T *expected, T value) {
     \item \citeauthor{shavit1999scalable}: Combining funnels \& bins
     \end{itemize}
 
-\item \acp{PQ} in distributed memory systems
+\item Strict \acp{PQ}
     \begin{itemize}
-    \item \citeauthor{sanders1998randomized}: Local \acp{PQ}, \lstinline|Insert| at random processor
+    \item \citeauthor{hunt1996efficient}: \textcolor{BrickRed}{Fine-grained locking heap}
+    \item \citeauthor{shavit2000skiplist}: \textcolor{BrickRed}{First SkipList-based \ac{PQ}}
+    \item \citeauthor{sundell2003fast}: \textcolor{BrickRed}{First lock-free \ac{PQ}}
+    \item \citeauthor{linden2013skiplist}: \textcolor{BrickRed}{Minimizes contention}
     \end{itemize}
 
 \item Relaxed data structures
     \begin{itemize}
     \item \citeauthor{kirsch2012fast}: k-FIFO queues
+    \item \citeauthor{wimmer2013data}: \textcolor{BrickRed}{k-\ac{PQ}}
+    \item \citeauthor{alistarhspraylist}: \textcolor{BrickRed}{SprayList}
     \end{itemize}
+
+\let\thefootnote\relax\footnote{Highlighted \acp{PQ} are presented in the following}
 
 \end{itemize}
 \end{frame}
@@ -156,6 +161,8 @@ bool CAS(T *ptr, T *expected, T value) {
 % --------------------------------------------------------------------------------------------------
 \section{Fine-grained Locking Heaps} \label{sec:locking}
 % --------------------------------------------------------------------------------------------------
+
+% TODO: Figure? Whiteboard demo? 1 summary slide only?
 
 \begin{frame}{\nameref{sec:locking}}
 \framesubtitle{\citeauthor{hunt1996efficient}}
@@ -289,7 +296,7 @@ struct node_t {
 
 \begin{frame}{\nameref{sec:lockfree}}
 \framesubtitle{\citeauthor{sundell2003fast}}
-% TODO: Way too much content - skip all except Linden?
+% TODO: Short summary only?
 \begin{itemize}
 \item
 \end{itemize}
@@ -297,7 +304,7 @@ struct node_t {
 
 \begin{frame}{\nameref{sec:lockfree}}
 \framesubtitle{\citeauthor{linden2013skiplist}}
-
+% TODO: Short summary only?
 \begin{itemize}
 \item
 \end{itemize}
@@ -325,16 +332,16 @@ struct node_t {
 \end{frame}
 
 \begin{frame}{\nameref{sec:relaxed}}
-\framesubtitle{\citeauthor{wimmer2013data}}
-
+\framesubtitle{\citeauthor{alistarhspraylist}}
+% Mention that large PQs are required (weak bound)
 \begin{itemize}
 \item
 \end{itemize}
 \end{frame}
 
 \begin{frame}{\nameref{sec:relaxed}}
-\framesubtitle{\citeauthor{alistarhspraylist}}
-
+\framesubtitle{\citeauthor{wimmer2013data}}
+% Essence: Local list, if necessary push to global
 \begin{itemize}
 \item
 \end{itemize}
@@ -347,11 +354,10 @@ struct node_t {
 \begin{frame}{\nameref{sec:Results}}
 
 \begin{itemize}
-\item All benchmarks were performed on Intel Xeon processors
+\item Benchmarking results from selected papers \& own results
 \item Each thread repeatedly chooses uniformly at random between
       \lstinline|Insert| and \lstinline|DeleteMin|
-\item Initial priority queue sizes were $2^{15}$ (Gruber), $10^6$ 
-      (\citeauthor{alistarhspraylist}), and unspecified (\citeauthor{linden2013skiplist})
+\item We present throughput, i.e. the number of operations performed per second
 \end{itemize}
 \end{frame}
 
@@ -363,7 +369,8 @@ struct node_t {
 \SweaveInput{../common/pqplot.Rnw}
 pqplot("../results/results.csv")
 @
-\caption{Throughput benchmark results.}
+\caption{GCC 4.8.2, 80-core Intel Xeon E7-8850 @ 2.0 GHz. \ac{PQ} initialized with $2^{15}$
+elements.}
 \end{figure}
 \end{frame}
 
@@ -372,7 +379,7 @@ pqplot("../results/results.csv")
 
 \begin{figure}
 \includegraphics[width=0.6 \textwidth]{results_linden}
-\caption{Throughput benchmark results.
+\caption{GCC 4.7.2, 32-core Intel Xeon E5-4650 @ 2.7 GHz. Initial \ac{PQ} size unknown.
 \emph{New}: \citeauthor{linden2013skiplist},
 \emph{HaS}: \citeauthor{shavit2000skiplist},
 \emph{SaT}: \citeauthor{sundell2003fast}. 
@@ -382,10 +389,11 @@ pqplot("../results/results.csv")
 
 \begin{frame}{\nameref{sec:Results}}
 \framesubtitle{\citeauthor{alistarhspraylist}}
-
+% 10^6
 \begin{figure}
 \includegraphics[width=\textwidth]{results_spraylist}
-\caption{Throughput benchmark results. 
+\caption{GCC version unknown, 80-core Intel Xeon E7-4870 @ 2.4 GHz. \ac{PQ} initialized with $10^6$
+elements.
 (Image source: \cite{alistarhspraylist})}
 \end{figure}
 \end{frame}
