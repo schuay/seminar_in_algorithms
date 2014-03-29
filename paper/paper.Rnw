@@ -670,6 +670,7 @@ pqplot("../results/results.csv")
 % Note: Strong degradation of noble PQ with growing initial size.
 % Standard PQ benchmarking methodology, cite linden + ??.
 % Drop-off when using more than 1 socket, Linden p17.
+% Linden drop-off for new sockets, global-lock improvement
 
 \begin{comment}
 Sections / rough structure:
