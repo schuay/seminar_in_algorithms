@@ -310,18 +310,30 @@ struct node_t {
 
 \begin{frame}{\nameref{sec:lockfree}}
 \framesubtitle{\citeauthor{linden2013skiplist}}
-% TODO: Short summary only?
+
 \begin{itemize}
-\item
+\item Most efficient strict \ac{PQ}, \ac{SL}-based \& linearizable
+\item Concurrent strict \ac{PQ} performance limited by contention and \ac{CAS} failures in
+      \lstinline|DeleteMin| \textrightarrow ~ Minimize \ac{CAS} calls
+\item Deleted nodes form prefix of \ac{SL}, deletion flag packed into \lstinline|next| pointer of
+      \emph{previous} node prevents insertion \emph{before} deleted node
+\item Most \lstinline|DeleteMin| perform logical deletion (1 \ac{CAS}) only, physical deletion
+      only once a bound is reached
+\item Improves upon best previous \acp{PQ} by up to factor 2
+\item \fullcite{linden2013skiplist}
 \end{itemize}
 \end{frame}
 
 \begin{frame}{\nameref{sec:lockfree}}
 \framesubtitle{\citeauthor{linden2013skiplist}}
 
-\begin{itemize}
-\item
-\end{itemize}
+\begin{figure}
+\includegraphics[width=\textwidth]{linden}
+\caption{The \citeauthor{linden2013skiplist} \ac{PQ}. Concurrent \lstinline|Insert(3)| and
+\lstinline|DeleteMin| operations. Top right: \lstinline|DeleteMin| succeeds first,
+\lstinline|Insert(3)| \ac{CAS} fails. Bottom right: \lstinline|Insert(3)| succeeds first,
+\lstinline|DeleteMin| returns 3. (Image source: \cite{linden2013skiplist})}
+\end{figure}
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
