@@ -621,24 +621,24 @@ In this section, we compare the performance of several different concurrent prio
 queue implementations:
 
 \begin{itemize}
-\item \textbf{GlobalLock} An instance of the \lstinline|std::priority_queue<T>| class provided
+\item \textit{GlobalLock} An instance of the \lstinline|std::priority_queue<T>| class provided
       by the C++ standard library, protected by a single global lock.
-\item \textbf{Hunt} \citeauthor{hunt1996efficient} provide an implementation
+\item \textit{Heap} \citeauthor{hunt1996efficient} provide an implementation
       of their Heap-based design \cite{hunt1996efficient} at \url{ftp://ftp.cs.rochester.edu/pub/packages/concurrent_heap/}.
       However, as the original code was written for the MIPS architecture, we chose to
       use the alternative implementation in \emph{libcds}\footnote{\url{http://sourceforge.net/p/libcds/code/}}
       instead.
-\item \textbf{Noble} An implementation of the \citeauthor{sundell2003fast} priority queue \cite{sundell2003fast}
+\item \textit{Noble} An implementation of the \citeauthor{sundell2003fast} priority queue \cite{sundell2003fast}
       is available in the Noble library\footnote{\url{http://www.non-blocking.com/Eng/download-demo.aspx}}.
-      \textbf{Noble} is lock-free, based on SkipLists, and limited to unique priorities.
+      \textit{Noble} is lock-free, based on SkipLists, and limited to unique priorities.
       According to the authors, the commercial Noble library includes a more efficient
       version of this data structure that can also handle duplicate priority values.
-\item \textbf{Linden} Code for the \citeauthor{linden2013skiplist} priority queue \cite{linden2013skiplist}
+\item \textit{Linden} Code for the \citeauthor{linden2013skiplist} priority queue \cite{linden2013skiplist}
       is provided by the authors under an open source license\footnote{\url{http://user.it.uu.se/~jonli208/priorityqueue}}.
       It is lock-free and uses \citeauthor{fraser2004practical}'s lock-free
       SkipList. The aim of this implementation is to minimize contention in
       calls to \lstinline|DeleteMin|.
-\item \textbf{SprayList} A relaxed concurrent priority queue based on \citeauthor{fraser2004practical}'s
+\item \textit{SprayList} A relaxed concurrent priority queue based on \citeauthor{fraser2004practical}'s
       SkipList using random walks to spread data accesses
       incurred by \lstinline|DeleteMin| calls. Code provided by \citeauthor{alistarhspraylist} is
       available on Github\footnote{\url{https://github.com/jkopinsky/SprayList}}.
@@ -654,8 +654,10 @@ priority queue benchmarks
 Each run was repeated for a total of $10$ times
 and we report on the average throughput.
 
-All benchmarks were compiled with \verb|-O3| using GCC 4.8.2. Evaluations took place
-on an 80-core Intel Xeon machine. The benchmarking code was adapted from \citeauthor{linden2013skiplist}'s
+All benchmarks were compiled with \verb|-O3| using GCC 4.8.2, and executed with threads pinned to
+cores. Evaluations took place
+on an 80-core Intel Xeon E7-8850 machine with each processor clocked at 2 GHz.
+The benchmarking code was adapted from \citeauthor{linden2013skiplist}'s
 benchmarking suite and is available at \url{https://github.com/schuay/seminar_in_algorithms}.
 
 \begin{center}
@@ -664,6 +666,37 @@ benchmarking suite and is available at \url{https://github.com/schuay/seminar_in
 pqplot("../results/results.csv")
 @
 \end{center}
+
+The \textit{Linden} priority queue emerged as the clear winner of these benchmarks,
+with impressive scalability while all threads remain on the same socket. In fact, it is the only
+tested implementation to scale to any significant degree; \textit{Heap} achieves minor gains
+for up to 3 threads, while all others immediately lose throughput under concurrency.
+Performance of the \textit{Linden} queue drops significantly once it is executed on more than 10
+threads, thus incurring communication overhead across sockets. This effect is repeated to a lesser
+degree every time an additional socket becomes active. However, the \textit{Linden} queue has
+clearly superior throughput until the tested maximum of 80 threads.
+
+\textit{GlobalLock} also performs surprisingly well at high concurrency levels.
+It remains competitive when compared to \textit{Linden} at about $\frac{2}{3}$ of its throughput.
+For single-threaded execution, it achieves the highest throughput of all tested implementations.
+It is interesting to note that the \textit{GlobalLock} shows complementary behavior to
+\textit{Linden} when new sockets become active; we believe that the additional latency incurred
+by cross-socket communications might lead to reduced contention at the single lock.
+
+All remaining implementations behave similarly, displaying very low throughput under concurrency.
+This is a surprise in the case of \textit{Noble}; the original benchmarks performed by
+\citeauthor{sundell2003fast} led us to expect improvements upon both\textit{GlobalLock}
+and \textit{Heap} \cite{sundell2003fast}. However, we are somewhat reassured in our benchmarks by
+the fact that \citeauthor{linden2013skiplist}'s results are similar.
+
+The \textit{SprayList} result is even more unexpected, and we believe that it may be caused by
+our use of \lstinline|malloc| instead of the included custom lock-free allocator, which we were
+unable to execute without errors.
+
+As a final observation we note that even the most efficient strict concurrent priority queue
+never exceeds the throughput of the simple sequential heap executed on a single thread by more
+than a factor of two. There is hope however since relaxed data structures continue to scale
+beyond 10 threads (see the benchmarks performed in \cite{alistarhspraylist} for an example).
 
 % TODO: Figures, interpretation. Mention that Noble requires pointers -> new/delete.
 % Better hardware description - see SprayList section 4, Linden p16.
