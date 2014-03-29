@@ -18,5 +18,6 @@ private:
     typedef NBL::PQueue<uint32_t, uint32_t> pq_t;
 
     pq_t *m_q;
+    uint32_t *m_keys;
 };
 #endif /* __NOBLE_H */

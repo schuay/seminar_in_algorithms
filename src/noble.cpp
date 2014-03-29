@@ -1,9 +1,18 @@
 #include <noble.h>
 
+static constexpr uint32_t K_STRIDE = 1 << 12;
+static constexpr uint32_t K_SIZE   = 1 << 20;
+
 Noble::Noble()
 {
     /* Lock-free, bounded memory usage. */
     m_q = pq_t::CreateLF_EB();
+
+
+    m_keys = new uint32_t[K_SIZE];
+    for (uint32_t i = 0; i < K_SIZE; i++) {
+        m_keys[i] = i * K_STRIDE;
+    }
 }
 
 Noble::~Noble()
@@ -15,13 +24,13 @@ Noble::~Noble()
     } while (nonempty);
 
     delete m_q;
+    delete[] m_keys;
 }
 
 void
 Noble::insert(const uint32_t v)
 {
-    uint32_t *u = new uint32_t { v };
-    m_q->Insert(u, u);
+    m_q->Insert(&m_keys[v / K_STRIDE], &m_keys[v / K_STRIDE]);
 }
 
 bool
@@ -39,7 +48,6 @@ Noble::delete_min(uint32_t &v)
     }
 
     v = *u;
-    delete u;
 
     return true;
 }
