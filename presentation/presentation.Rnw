@@ -244,7 +244,8 @@ struct node_t {
 \begin{itemize}
 \item First SkipList-based \ac{PQ}
 \item \fullcite{shavit2000skiplist}
-\item Initially lock-based, lock-free variant published in 2008
+\item Initially lock-based (linearizable), lock-free (quiescently consistent)
+      variant published in 2008
 \item \fullcite{herlihy2012art}
 \end{itemize}
 \end{frame}
@@ -342,18 +343,30 @@ struct node_t {
 
 \begin{frame}{\nameref{sec:relaxed}}
 
-% Intro relaxed
-
 \begin{itemize}
-\item
+\item Strict \acp{PQ} have inherent bottleneck at minimal element
+\item To improve further: $< 1$ \ac{CAS} per \lstinline|DeleteMin|
+\item Another approach is to relax semantics, i.e. instead of returning \emph{the} minimal element,
+      return one of the $k$ minimal elements
 \end{itemize}
 \end{frame}
 
 \begin{frame}{\nameref{sec:relaxed}}
 \framesubtitle{\citeauthor{alistarhspraylist}}
-% Mention that large PQs are required (weak bound)
+
 \begin{itemize}
-\item
+\item Relaxed \ac{SL}-based \ac{PQ}, safety properties unclear
+\item \lstinline|DeleteMin| returns one of the $O(P \log^3 P)$ elements
+\item Degrades to random-remove if the \ac{PQ} is small compared to thread count $P$ (for $P = 80$,
+      $P \log^3 P \approx 7000$)
+\item \lstinline|DeleteMin| performs random walk: starting at the list head on some level $l$,
+      repeatedly follow a randomized number of \lstinline|next[l]| pointers, descend a randomized
+      number of levels
+\item Parameters are chosen s.t. each element within the walk has approximately equal probability
+      of being returned
+\item Benchmarks show scalability comparable to a random-remove \lstinline|Delete| up to at
+      least 80 threads
+\item \fullcite{alistarhspraylist}
 \end{itemize}
 \end{frame}
 
@@ -361,8 +374,26 @@ struct node_t {
 \framesubtitle{\citeauthor{wimmer2013data}}
 % Essence: Local list, if necessary push to global
 \begin{itemize}
-\item
+\item First relaxed linearizable \acp{PQ}: we discuss the hybrid k-\ac{PQ} which, provides a bound of
+      $kP$ missed elements in \lstinline|DeleteMin|
+\item Consists of a list of globally visible elements, and per thread: a local item list, and a local
+      \ac{PQ}
+\item \lstinline|Insert| accesses only the local structures as long as guarantees are not violated,
+      otherwise the global list is updated the the local view is synchronized
+\item \lstinline|DeleteMin| pops the local queue if it is non-empty; otherwise spy, i.e. copy
+      elements from another thread's local list
+\item Very good scalability up to 10 threads, further limited gains with rising thread counts
+\item \fullcite{wimmer2013data}
 \end{itemize}
+\end{frame}
+
+\begin{frame}{\nameref{sec:lockfree}}
+\framesubtitle{\citeauthor{wimmer2013data}}
+
+\begin{figure}
+\includegraphics[width = 0.65\textwidth]{wimmer}
+\caption{The \citeauthor{wimmer2013data} hybrid k-\ac{PQ}. (Image source: \cite{wimmer2013data})}
+\end{figure}
 \end{frame}
 
 % --------------------------------------------------------------------------------------------------
