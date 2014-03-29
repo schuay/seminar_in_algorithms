@@ -105,8 +105,8 @@ all related to each other?  Do all of your tenses match up in a paragraph?
 \end{comment}
 
 \begin{abstract}
-Priority queues are abstract data structures which store a set of (priority, item) pairs
-and allow efficient access to the item with minimal priority. Such queues are an important
+Priority queues are abstract data structures which store a set of key/value pairs
+and allow efficient access to the item with the minimal (maximal) key. Such queues are an important
 element in various areas of computer science such as algorithmics (i.e. Dijkstra's shortest
 path algorithm) and operating system (i.e. priority schedulers).
 
@@ -182,7 +182,7 @@ wait-free data structures \cite{kogan2012methodology}.
 
 % Linearizability, sequential and quiescent consistency.
 
-There are several different criteria which allows reasoning about the correctness of concurrent
+There are several different criteria which allow reasoning about the correctness of concurrent
 data structures. \emph{Linearizable} \cite{herlihy1990linearizability} operations appear to take
 effect at a single instant in time at so-called linearization points. Linearizability is composable ---
 any data structure composed of linearizable objects is also linearizable.
@@ -383,7 +383,7 @@ and is implemented using commonly available atomic primitives \ac{CAS}, \ac{TAS}
 In contrast to other structures covered in this paper, this priority queue is restricted to
 contain items with pairwise distinct priorities. Inserting a new item with a priority already contained
 in the list simply performs an update of the associated value.
-A real-time version is also provided which will we will not discuss further (interested readers are
+A real-time version is also provided which we will not discuss further (interested readers are
 referred to \cite{sundell2003fast}).
 
 \begin{figure}[ht]
@@ -400,7 +400,7 @@ struct node_t {
 
 The structure of each node is basically identical to Figure \ref{fig:basicsl}. However, \citeauthor{sundell2003fast}
 exploit the fact that the two least significant bits of pointers on 32- and 64-bit systems
-are unused and reuse these as deletion marks. A set least significant bit signifies on a pointer signifies
+are unused and reuse these as deletion marks. A set least significant bit on a pointer signifies
 that the current node is about to be deleted.
 Reuse of \lstinline|node.level[i]| pointers
 prevents situations in which a new node is inserted while its predecessor is being removed,
@@ -423,7 +423,7 @@ of the list.
 
 % TODO: Mention backoff.
 
-This implementation uses the lock-free memory management by invented by \citeauthor{valois1996lock}
+This implementation uses the lock-free memory management invented by \citeauthor{valois1996lock}
 \cite{valois1995lock,valois1996lock} and corrected by \citeauthor{michael1995correction} 
 \cite{michael1995correction}. It was chosen in particular because this scheme can guarantee validity
 of \lstinline|prev| as well as all \lstinline|next| pointers. Additionally, it does not require a separate
@@ -474,7 +474,7 @@ This mechanism requires a new invariant, in that the set of all logically delete
 form a prefix of the SkipList. Recall that in the \citeauthor{sundell2003fast} queue, deletion flags
 for node \lstinline|n| were packed into \lstinline|n.next| pointers, preventing insertion of new
 nodes \emph{after} deleted nodes. This implementation instead places the deletion flag into the
-lowest level \lstinline|next| pointer of the previous node, preventing inserations \emph{before}
+lowest level \lstinline|next| pointer of the previous node, preventing insertions \emph{before}
 logically deleted nodes.
 
 Once the prefix of logically deleted nodes reaches a specified length (represented by \lstinline|BoundOffset|),
@@ -553,6 +553,8 @@ The hybrid queue consists of a list of globally visible items and one local item
 sequential priority queue per thread. The thread-local counter \lstinline|remaining_k| tracks how many more
 items may be added to the local queue until all local items must be made globally visible to avoid
 breaking guarantees.
+
+% TODO: Mention that the global list is periodically scanned by each thread.
 
 Whenever an item is added, it is first added locally to both \lstinline|local_list| and \lstinline|prio_queue|
 and \lstinline|remaining_k| is decremented. If \lstinline|remaining_k| reaches zero, then the local
@@ -633,8 +635,8 @@ queue implementations:
       version of this data structure that can also handle duplicate priority values.
 \item \textbf{Linden} Code for the \citeauthor{linden2013skiplist} priority queue \cite{linden2013skiplist}
       is provided by the authors under an open source license\footnote{\url{http://user.it.uu.se/~jonli208/priorityqueue}}.
-      It is lock-free, SkipList-based, and uses \citeauthor{fraser2004practical}'s lock-free
-      SkipList implementation. The aim of this implementation is to minimize contention in
+      It is lock-free and uses \citeauthor{fraser2004practical}'s lock-free
+      SkipList. The aim of this implementation is to minimize contention in
       calls to \lstinline|DeleteMin|.
 \item \textbf{SprayList} A relaxed concurrent priority queue based on \citeauthor{fraser2004practical}'s
       SkipList using random walks to spread data accesses
@@ -758,7 +760,7 @@ that the peak performance in such structures has been reached.
 
 Recently invented relaxed priority queues do not exhibit the inherent bottleneck at the front of the list,
 as they do not necessarily return the minimal element within the queue and are able to spread
-\lstinline|DeleteMin| accesses over a larger area of the structure. In consequence, relaxed queues scale noticeable
+\lstinline|DeleteMin| accesses over a larger area of the structure. In consequence, relaxed queues scale noticeably
 better and to larger thread counts than strict designs. Further research is necessary in order to fully
 explore the possibilities provided by relaxed data structures.
 
