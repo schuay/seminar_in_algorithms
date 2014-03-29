@@ -296,9 +296,15 @@ struct node_t {
 
 \begin{frame}{\nameref{sec:lockfree}}
 \framesubtitle{\citeauthor{sundell2003fast}}
-% TODO: Short summary only?
+
 \begin{itemize}
-\item
+\item First lock-free \ac{PQ}, linearizable, \ac{SL}-based, distinct priorities
+\item Deletion flag packed into least significant bits of \lstinline|next| pointers
+      prevent insertion \emph{after} deleted nodes
+\item Helping mechanism ensures only a single logically deleted node exists at any time
+\item Performs significantly better than the \citeauthor{hunt1996efficient} heap, slightly better
+      than a SkipList protected by a global lock
+\item \fullcite{sundell2003fast}
 \end{itemize}
 \end{frame}
 
