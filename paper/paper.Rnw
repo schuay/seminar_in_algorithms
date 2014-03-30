@@ -638,8 +638,9 @@ queue implementations:
       is provided by the authors under an open source license\footnote{\url{http://user.it.uu.se/~jonli208/priorityqueue}}.
       It is lock-free and uses \citeauthor{fraser2004practical}'s lock-free
       SkipList. The aim of this implementation is to minimize contention in
-      calls to \lstinline|DeleteMin|. We chose $128$ as the \lstinline|BoundOffset| in order to accomodate
-      high thread counts.
+      calls to \lstinline|DeleteMin|. We chose $32$ as the \lstinline|BoundOffset| in order to optimize
+      performance on a single socket. A \lstinline|BoundOffset| of $128$ performed only marginally better
+      at high thread counts.
 \item \textit{SprayList} A relaxed concurrent priority queue based on \citeauthor{fraser2004practical}'s
       SkipList using random walks to spread data accesses
       incurred by \lstinline|DeleteMin| calls. Code provided by \citeauthor{alistarhspraylist} is
