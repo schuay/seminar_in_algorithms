@@ -627,7 +627,8 @@ queue implementations:
       of their Heap-based design \cite{hunt1996efficient} at \url{ftp://ftp.cs.rochester.edu/pub/packages/concurrent_heap/}.
       However, as the original code was written for the MIPS architecture, we chose to
       use the alternative implementation in \emph{libcds}\footnote{\url{http://sourceforge.net/p/libcds/code/}}
-      instead.
+      instead. The heap capacity was $2^{18}$ --- lower values led to a quasi-deadlock situation under high concurrency
+      as described in \cite{dragicevic2008survey}.
 \item \textit{Noble} An implementation of the \citeauthor{sundell2003fast} priority queue \cite{sundell2003fast}
       is available in the Noble library\footnote{\url{http://www.non-blocking.com/Eng/download-demo.aspx}}.
       \textit{Noble} is lock-free, based on SkipLists, and limited to unique priorities.
@@ -637,7 +638,8 @@ queue implementations:
       is provided by the authors under an open source license\footnote{\url{http://user.it.uu.se/~jonli208/priorityqueue}}.
       It is lock-free and uses \citeauthor{fraser2004practical}'s lock-free
       SkipList. The aim of this implementation is to minimize contention in
-      calls to \lstinline|DeleteMin|.
+      calls to \lstinline|DeleteMin|. We chose $128$ as the \lstinline|BoundOffset| in order to accomodate
+      high thread counts.
 \item \textit{SprayList} A relaxed concurrent priority queue based on \citeauthor{fraser2004practical}'s
       SkipList using random walks to spread data accesses
       incurred by \lstinline|DeleteMin| calls. Code provided by \citeauthor{alistarhspraylist} is
