@@ -23,7 +23,7 @@ static std::atomic<bool> loop;
 static std::atomic<int> wait_barrier;
 
 static GlobalLock pq_globallock;
-static Heap pq_heap(DEFAULT_SIZE << 2);
+static Heap pq_heap(DEFAULT_SIZE << 3);
 static Noble pq_noble;
 static Linden pq_linden(DEFAULT_OFFSET);
 static SprayList pq_spraylist;
