@@ -404,23 +404,10 @@ struct node_t {
 
 \begin{itemize}
 \item Benchmarking results from selected papers \& own results
+\item We present throughput, i.e. the number of operations performed per second
 \item Each thread repeatedly chooses uniformly at random between
       \lstinline|Insert| and \lstinline|DeleteMin|
-\item We present throughput, i.e. the number of operations performed per second
 \end{itemize}
-\end{frame}
-
-\begin{frame}{\nameref{sec:Results}}
-\framesubtitle{Gruber}
-
-\begin{figure}
-<<results = tex, echo = FALSE>>=
-\SweaveInput{../common/pqplot.Rnw}
-pqplot("../results/results.csv")
-@
-\caption{GCC 4.8.2, 80-core Intel Xeon E7-8850 @ 2.0 GHz. \ac{PQ} initialized with $2^{15}$
-elements.}
-\end{figure}
 \end{frame}
 
 \begin{frame}{\nameref{sec:Results}}
@@ -433,6 +420,19 @@ elements.}
 \emph{HaS}: \citeauthor{shavit2000skiplist},
 \emph{SaT}: \citeauthor{sundell2003fast}. 
 (Image source: \cite{linden2013skiplist})}
+\end{figure}
+\end{frame}
+
+\begin{frame}{\nameref{sec:Results}}
+\framesubtitle{Gruber}
+
+\begin{figure}
+<<results = tex, echo = FALSE>>=
+\SweaveInput{../common/pqplot.Rnw}
+pqplot("../results/results.csv")
+@
+\caption{GCC 4.8.2, 80-core Intel Xeon E7-8850 @ 2.0 GHz. \ac{PQ} initialized with $2^{15}$
+elements.}
 \end{figure}
 \end{frame}
 
@@ -460,8 +460,6 @@ elements.
       semantics
 \item Much potential remains in relaxed \acp{PQ} and data structures in general
       \textrightarrow ~ future research
-\item A standalone version of the \citeauthor{wimmer2013data} \ac{PQ} is planned
-      and will allow direct comparison against related data structures
 \end{itemize}
 \end{frame}
 
