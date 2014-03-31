@@ -1,3 +1,4 @@
+*.Rnw.backup
 *.aux
 *.bbl
 *.blg
