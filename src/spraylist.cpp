@@ -51,7 +51,7 @@ SprayList::init_thread(const size_t nthreads)
 void
 SprayList::insert(const uint32_t v)
 {
-    sl_add(m_q, v, READ_ADD_REM_ELASTIC_TX);
+    sl_add(m_q, v, TRANSACTIONAL);
 }
 
 bool
