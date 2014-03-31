@@ -582,6 +582,11 @@ queue implementations:
       available on Github\footnote{\url{https://github.com/jkopinsky/SprayList}}.
 \end{itemize}
 
+Unfortunately, we were not able to obtain an implementation of the \citeauthor{shavit2000skiplist}
+priority queue for benchmarking. The \citeauthor{wimmer2013data} data structure was omitted in the
+following benchmarks since it is tightly coupled with the task-scheduling framework \emph{Pheet},
+and cannot directly be compared to other implementations in its current form.
+
 In each test run, the examined priority queue was initially filled with $2^{15}$
 elements. We then ran a tight loop of $50\%$ insertions and $50\%$ deletions
 for a total of $10$ seconds, where all \lstinline|Insert|
