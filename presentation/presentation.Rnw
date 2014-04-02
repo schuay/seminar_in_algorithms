@@ -38,12 +38,6 @@
 
 \maketitle
 
-\begin{frame}{Outline}
-\begin{minipage}[t][10em][t]{\linewidth}
-\tableofcontents
-\end{minipage}
-\end{frame}
-
 % --------------------------------------------------------------------------------------------------
 \section{Introduction} \label{sec:intro}
 % --------------------------------------------------------------------------------------------------
@@ -81,7 +75,6 @@ bool DeleteMin(pq_t *pq, value_t *v)
 \begin{itemize}
 \item \emph{Linearizability}: operations appear to take effect at a single point in time, the linearization point
 \item \emph{Quiescent consistency}: in a period of quiescence, semantics equivalent to some sequential ordering
-\item And others, i.e. \emph{sequential consistency}, \emph{serializability}
 \end{itemize}
 \end{frame}
 
@@ -91,7 +84,6 @@ bool DeleteMin(pq_t *pq, value_t *v)
 \begin{itemize}
 \item \emph{Lock-freedom}: at least a single process makes progress at all times
 \item \emph{Wait-freedom}: every process finishes in a bounded number of steps
-\item Further liveness conditions: \emph{Starvation-freedom}, \emph{Deadlock-freedom}
 \end{itemize}
 \end{frame}
 
