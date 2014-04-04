@@ -162,7 +162,7 @@ environment.
 
 SkipLists \cite{pugh1990skip} have become increasingly popular in concurrent data structures because 
 they are both simple to implement, and exhibit excellent disjoint-access parallelism. In contrast to
-search trees and Heaps, reorganization is not necessary, since SkipLists rely on
+search trees and Heaps, reorganization is not necessary since SkipLists rely on
 randomization for an expected $O(\log n)$ complexity of \lstinline|Insert|, \lstinline|Search|
 and \lstinline|Delete| operations.
 A SkipList may be visualized as a set of linked lists with corresponding levels. The linked
@@ -172,8 +172,6 @@ into the SkipList such that a list of level $i + 1$ contains a subset of the obj
 $i$. A SkipList node $n$ is said to be of level $i$ if it is in all lists of levels $[0, i]$
 and in none of levels $[i + 1, \infty]$. Upon insertion, the new node's level is assigned at random
 according to a geometric distribution; deletion simply removes the node.
-
-% TODO: Maybe integrate into description - otherwise remove. Do we need further detail?
 
 \begin{figure}[ht]
 \begin{lstlisting}
@@ -261,8 +259,6 @@ for priority queues \cite{linden2013skiplist}. Their initial locking implementat
 \cite{shavit2000skiplist} builds on \citeauthor{pugh1998concurrent}'s concurrent
 SkipList \cite{pugh1998concurrent}, which uses one lock per node per level.
 
-% TODO: This counts for all skiplist impls.
-
 A crucial observation is that nodes which are only partially connected
 do not affect correctness of the data structure. As soon as the first level (i.e. \lstinline|node.level[0]|)
 has been successfully connected, a node is considered to be in the SkipList.
@@ -309,8 +305,6 @@ execution at quiescent periods.
 \citeauthor{shavit2000skiplist} counteract this by introducing a \lstinline|timestamp| for each
 node which is set upon successful insertion. In this variant, each \lstinline|DeleteMin| operation
 simply ignores all nodes it sees that have not been fully inserted at the time it was called.
-
-% TODO: Linearizability points.
 
 Explicit memory management is required to avoid dereferencing pointers to freed memory areas
 by other threads after physical deletion. This implementation uses a dedicated garbage collector
@@ -369,8 +363,6 @@ to set the deletion bits on all next pointers and then removes the node from the
 \lstinline|node.prev| pointer is used as a shortcut to the previous node, avoiding a complete retraversal
 of the list.
 
-% TODO: Mention backoff.
-
 This implementation uses the lock-free memory management invented by \citeauthor{valois1996lock}
 \cite{valois1995lock,valois1996lock} and corrected by \citeauthor{michael1995correction} 
 \cite{michael1995correction}. It was chosen in particular because this scheme can guarantee validity
@@ -379,8 +371,6 @@ garbage collector thread.
 
 A rigorous linearizability proof is provided in the original paper \cite{sundell2003fast} which shows
 linearization points for all possible outcomes of all operations.
-
-% TODO: Further details?
 
 Benchmarks performed by \citeauthor{sundell2003fast} show their queue performing noticeably better than both locking 
 queues from Sections \ref{sec:shavit} and \ref{sec:hunt}, and slightly better than a priority queue
@@ -604,7 +594,7 @@ In each test run, the examined priority queue was initially filled with $2^{15}$
 elements. We then ran a tight loop of $50\%$ insertions and $50\%$ deletions
 for a total of $10$ seconds, where all \lstinline|Insert|
 operations within this context implicitly choose a key uniformly at random from
-the range of all 32-bit integers. This methodology seems to be the de facto standard for concurrent % TODO: Similar phrasing as linden :(
+the range of all 32-bit integers. This methodology seems to be the de facto standard for concurrent
 priority queue benchmarks
 \cite{alistarhspraylist,linden2013skiplist,shavit2000skiplist,sundell2003fast}.
 Each run was repeated for a total of $10$ times
