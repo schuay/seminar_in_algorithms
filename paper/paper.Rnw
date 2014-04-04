@@ -148,12 +148,13 @@ can succeed while all others must retry. \emph{Disjoint-access parallelism} is t
 spreading such accesses in order to reduce contention as much as possible. 
 
 % Priority queues.
-% TODO: Check for whitespace error @ beginning of line this paragraph.
+
 Priority queues are an abstract data structure allowing insertion of items with a given priority
 and removal of the lowest-priority item in logarithmic time. Search trees and Heaps (which are
 flattened representations of complete trees such that each node's key is at least as large as
 those of both children) are concrete data structures which are usually used to implement sequential
-priority queues. However, both require fairly elaborate reorganization after \lstinline|DeleteMin|
+priority queues. However, both require fairly elaborate reorganization after
+{\lstset{breakatwhitespace=true} \lstinline|DeleteMin|}
 and/or \lstinline|Insert| operations, which are especially challenging to achieve in a concurrent
 environment. 
 
