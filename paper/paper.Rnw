@@ -493,8 +493,6 @@ sequential priority queue per thread. The thread-local counter \lstinline|remain
 items may be added to the local queue until all local items must be made globally visible to avoid
 breaking guarantees.
 
-% TODO: Mention that the global list is periodically scanned by each thread.
-
 Whenever an item is added, it is first added locally to both \lstinline|local_list| and \lstinline|prio_queue|
 and \lstinline|remaining_k| is decremented. If \lstinline|remaining_k| reaches zero, then the local
 item list is appended to the global list, and all not yet seen (by this thread) items of the global
@@ -505,7 +503,9 @@ item has already been deleted. When a non-deleted item is popped, it is atomical
 and returned to the caller. If instead we are faced with an empty local queue, we attempt to spy,
 i.e. copy items from another thread's local list.
 
-% TODO: Memory management.
+Both \lstinline|Insert| and \lstinline|DeleteMin| periodically synchronize with the global list
+by adding all items that have not yet been seen locally to \lstinline|prio_queue|.
+Memory allocations are handled using the wait-free memory manager by \citeauthor{wimmer2013wait} \cite{wimmer2013wait}.
 
 The \citeauthor{wimmer2013data} priority queue was evaluated using a label-correcting variant
 of Dijkstra's shortest path algorithms. Their model creates a task for each node
