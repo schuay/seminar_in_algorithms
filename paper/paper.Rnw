@@ -402,9 +402,7 @@ struct node_t {
 \label{fig:lindensl}
 \end{figure}
 
-% TODO: Mention inserting flag and memory management!
-
-In this implementation, \lstinline|DeleteMin| operations only perform logical deletion by setting
+In this implementation, most \lstinline|DeleteMin| operations only perform logical deletion by setting
 the deletion flag with a single \ac{FAO} call; nodes are only deleted physically once a certain
 threshold of logically deleted nodes is reached.
 
@@ -432,7 +430,10 @@ The actual \lstinline|DeleteMin| and \lstinline|Insert| implementations are surp
 Deletions simply traverse the list until the first node for which \lstinline|(ptr, d) = FAO((node.next[0], d), 1)|
 returns a previously unset deletion flag (\lstinline|d = 0|) and then return \lstinline|ptr|.
 Insertions occur bottom-up and follow the basic \citeauthor{fraser2004practical} algorithm \cite{fraser2004practical},
-taking the separation of deletion flags and nodes into account.
+taking the separation of deletion flags and nodes into account. The \lstinline|node.inserting| flag
+is set until the node has been fully inserted, and prevents moving the list head past a partially
+inserted node. \citeauthor{fraser2004practical}'s epoch-based reclamation scheme \cite{fraser2004practical}
+is used for memory management.
 
 The authors provide high level correctness and linearizability proofs as well as a model for the
 SPIN model checker. Performance has been shown to compare favorably to both
