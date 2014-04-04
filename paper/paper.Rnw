@@ -30,7 +30,7 @@
     numbers=left,
 }
 
-\title{State of the Art in Concurrent Priority Queues \\
+\title{Practical Concurrent Priority Queues \\
        Student Paper for Seminar in Algorithms 2013W \\
        Technical University of Vienna}
 \author{Jakob Gruber, 0203440}
@@ -137,10 +137,10 @@ can succeed while all others must retry. \emph{Disjoint-access parallelism} is t
 spreading such accesses in order to reduce contention as much as possible. 
 
 % Priority queues.
-
+% TODO: Check for whitespace error @ beginning of line this paragraph.
 Priority queues are an abstract data structure allowing insertion of items with a given priority
 and removal of the lowest-priority item in logarithmic time. Search trees and Heaps (which are
-flattened representations of complete trees such that each node's value is at least as large as
+flattened representations of complete trees such that each node's key is at least as large as
 those of both children) are concrete data structures which are usually used to implement sequential
 priority queues. However, both require fairly elaborate reorganization after \lstinline|DeleteMin|
 and/or \lstinline|Insert| operations, which are especially challenging to achieve in a concurrent
@@ -180,6 +180,7 @@ struct node_t {
 /* All operations are expected O(log n) time. */
 void slist_insert(slist_t *l, key_t k, value_t v);
 bool slist_delete(slist_t *l, key_t k, value_t &v);
+bool slist_contains(slist_t *l, key_t k);
 \end{lstlisting}
 \caption{Basic SkipList structure and operations.}
 \label{fig:basicsl}
@@ -207,7 +208,7 @@ once a certain amount of traffic is reached, since only subsequent insertions
 are guaranteed to take disjoint paths towards the root node. Note also that
 the root node is a severe serial bottleneck, since it is potentially part of
 every insertion path, and necessarily of every \lstinline|DeleteMin| operation.
-Finally, in contrast to later dynamic SkipList-based designs, the capacity of Hunt Heap
+Finally, in contrast to later dynamic SkipList-based designs, the capacity of Hunt Heaps
 is fixed upon creation.
 
 Benchmarking results in the literature have been mixed; a sequential priority
@@ -316,7 +317,7 @@ because the Java virtual machine provides a garbage collector.
 \citeyear{sundell2003fast} \cite{sundell2003fast}. The data structure is linearizable
 and is implemented using commonly available atomic primitives \ac{CAS}, \ac{TAS}, and \ac{FAA}.
 In contrast to other structures covered in this paper, this priority queue is restricted to
-contain items with pairwise distinct priorities. Inserting a new item with a priority already contained
+contain items with distinct priorities. Inserting a new item with a priority already contained
 in the list simply performs an update of the associated value.
 A real-time version is also provided which we will not discuss further (interested readers are
 referred to \cite{sundell2003fast}).
@@ -628,7 +629,7 @@ by cross-socket communications might lead to reduced contention at the single lo
 
 All remaining implementations behave similarly, displaying very low throughput under concurrency.
 This is a surprise in the case of \textit{Noble}; the original benchmarks performed by
-\citeauthor{sundell2003fast} led us to expect improvements upon both\textit{GlobalLock}
+\citeauthor{sundell2003fast} led us to expect improvements upon both \textit{GlobalLock}
 and \textit{Heap} \cite{sundell2003fast}. However, we are somewhat reassured in our benchmarks by
 the fact that \citeauthor{linden2013skiplist}'s results are similar.
 
