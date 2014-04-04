@@ -130,11 +130,20 @@ any data structure composed of linearizable (quiescently consistent) objects is 
 executed in parallel to be equivalent to the result of some sequential ordering of the same
 operations.
 
+% Synchronization primitives.
+
+Lock-free algorithms and data structures are commonly constructed using synchronization primitives
+such as \acf{CAS}, \ac{FAA}, \ac{FAO}, and \ac{TAS}. The \ac{CAS} instruction, which atomically
+compares a memory location to an expected value and sets it to a new value if they are equal,
+is implemented on most modern architectures and can be considered a basic building block of lock-free
+programming. More exotic primitives such as \ac{DCAS} and \ac{DCSS} exist as well, but are not yet
+widely available and require inefficient software emulations to be used.
+
 % Disjoint-access parallelism.
 
 An area in memory accessed frequently by a large number of processes is said to be \emph{contended}.
 Contention is a limiting factor regarding scalability: concurrent reads and writes to the same
-location must be serialized by the cache coherence protocol, and only a single concurrent \ac{CAS} % TODO: Short section on primitives.
+location must be serialized by the cache coherence protocol, and only a single concurrent \ac{CAS}
 can succeed while all others must retry. \emph{Disjoint-access parallelism} is the concept of
 spreading such accesses in order to reduce contention as much as possible. 
 
