@@ -81,7 +81,7 @@ Concurrent priority queues have been the subject of research since the 1980s
 \cite{ayani1990lr,biswas1987simultaneous,das1996distributed,deo1992parallel,huang1991evaluation,
 luchetti1993some,mans1998portable,olariu1991optimal,prasad1995parallel}.
 While early efforts have focused mostly on parallelizing Heap structures
-\cite{hunt1996efficient}, % TODO: Many more, see \cite{shavit2000skiplist}
+\cite{hunt1996efficient},
 more recently priority queues based on \citeauthor{pugh1990skip}'s SkipLists
 \cite{pugh1990skip} seem to show more potential \cite{shavit2000skiplist,
 sundell2003fast,herlihy2012art,linden2013skiplist}. Current research has also examined
@@ -119,14 +119,16 @@ wait-free data structures \cite{kogan2012methodology}.
 
 There are several different criteria which allow reasoning about the correctness of concurrent
 data structures. \emph{Linearizable} \cite{herlihy1990linearizability} operations appear to take
-effect at a single instant in time at so-called linearization points. Linearizability is composable ---
-any data structure composed of linearizable objects is also linearizable.
-\emph{Sequential consistency} \cite{lamport1979make} requires the result of a set of operations
-executed in parallel to be equivalent to the result of some sequential ordering of the same
-operations.
+effect at a single instant in time at so-called linearization points.
 \emph{Quiescently consistent} \cite{shavit1996diffracting} data structures
 guarantee that the result of a set of parallel operations is equal to the result of a sequential ordering
 after a period of quiescence, i.e. an interval without active operations has passed.
+Linearizability as well as quiescent consistency are composable ---
+any data structure composed of linearizable (quiescently consistent) objects is also linearizable
+(quiescently consistent).
+\emph{Sequential consistency} \cite{lamport1979make} requires the result of a set of operations
+executed in parallel to be equivalent to the result of some sequential ordering of the same
+operations.
 
 % Disjoint-access parallelism.
 
